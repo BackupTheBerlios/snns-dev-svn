@@ -146,12 +146,13 @@ static char  *title[] = {
     "3D translation section",
     "time delay section",
     "pruning function",
-    "subordinate learning function"
+    "subordinate learning function",
+    "init function"   /* danysan */
 /*
     "topologic definition section",
     "feedforward network"
 */
-    };	 /*  20  */
+    };	 /*  21  */
 
 static int  NoOfTitles = (sizeof title) / (sizeof title[0]);
 
@@ -215,10 +216,10 @@ static char  *getSection(char *line, int *title_no);
 static bool  matchHead2(int N);
 static char  *my_strstr(char *s, char *find);
 static void  krio_readHeader(char *netfile_version, char *net_name,
-			     char *learn_func, char *update_func, char
-			     *pruning_func, char *ff_learn_func, int
-			     *no_of_units, int *no_of_connect, int
-			     *no_of_unitTypes, int *no_of_siteTypes);
+			     char *learn_func, char *update_func, char *init_func,
+				 char *pruning_func, char *ff_learn_func, 
+			     int *no_of_units, int *no_of_connect,
+			     int *no_of_unitTypes, int *no_of_siteTypes);
 static int  str_to_Ttype(char *str);
 static void  krio_readSiteDefinitions(void);
 static void  krio_readTypeDefinitions(void);

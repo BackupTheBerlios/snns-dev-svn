@@ -8,27 +8,27 @@ typedef union
 		int	r;
 	}	version;	/* Versionsnummer #.# */
 } YYSTYPE;
-#define	L_BRACKET	258
-#define	R_BRACKET	259
-#define	VERSION_HEADER	260
-#define	GENERATED_AT	261
-#define	NO_OF_PATTERN	262
-#define	NO_OF_INPUT	263
-#define	NO_OF_OUTPUT	264
-#define	NO_OF_VAR_IDIM	265
-#define	NO_OF_VAR_ODIM	266
-#define	MAXIMUM_IDIM	267
-#define	MAXIMUM_ODIM	268
-#define	NO_OF_CLASSES	269
-#define	CLASS_REDISTRIB	270
-#define	REMAPFUNCTION	271
-#define	REMAP_PARAM	272
-#define	ERROR	273
-#define	PATTERNEND	274
-#define	PATTERNNOCLASS	275
-#define	NUMBER	276
-#define	NAME	277
-#define	V_NUMBER	278
+#define	L_BRACKET	257
+#define	R_BRACKET	258
+#define	VERSION_HEADER	259
+#define	GENERATED_AT	260
+#define	NO_OF_PATTERN	261
+#define	NO_OF_INPUT	262
+#define	NO_OF_OUTPUT	263
+#define	NO_OF_VAR_IDIM	264
+#define	NO_OF_VAR_ODIM	265
+#define	MAXIMUM_IDIM	266
+#define	MAXIMUM_ODIM	267
+#define	NO_OF_CLASSES	268
+#define	CLASS_REDISTRIB	269
+#define	REMAPFUNCTION	270
+#define	REMAP_PARAM	271
+#define	ERROR	272
+#define	PATTERNEND	273
+#define	PATTERNNOCLASS	274
+#define	NUMBER	275
+#define	NAME	276
+#define	V_NUMBER	277
 
 
 extern YYSTYPE pplval;

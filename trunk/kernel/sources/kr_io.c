@@ -164,8 +164,9 @@ static krui_err  krio_writeHeader(char *version, char *net_name)
   (void) time( (time_t *) &clock);
 
   err = fprintf( file_out, "%s %s\n%s %s\n%s : ",
-                title[0], version, title[1], 
-		ctime( (time_t *) &clock), title[2] );
+                title[0], version,
+                title[1], ctime( (time_t *) &clock),
+                title[2] );
   retchk( err );
 
   if (net_name == NULL)
@@ -185,23 +186,22 @@ static krui_err  krio_writeHeader(char *version, char *net_name)
 
   learn_func = krui_getLearnFunc();
 
-  err = fprintf( file_out, "\n\n%s : %s\n",
-                title[7], learn_func );
+  err = fprintf( file_out, "\n\n%s : %s\n", title[7], learn_func );
   retchk( err );
-  err = fprintf( file_out, "%s   : %s\n",
-                title[16], krui_getUpdateFunc() );
+
+  err = fprintf( file_out, "%s   : %s\n", title[16], krui_getUpdateFunc() );
   retchk( err );
+
+  err = fprintf( file_out, "%s     : %s\n", title[21], krui_getInitialisationFunc() ); /* danysan */
+  retchk( err ); /* danysan */
 
   if (strcmp (learn_func, "PruningFeedForward") == 0)
   {
-  err = fprintf( file_out, "%s   : %s\n",
-                title[19], krui_getPrunFunc() );
-  retchk( err );
-  err = fprintf( file_out, "%s   : %s\n",
-                title[20], krui_getFFLearnFunc() );
-  retchk( err );
+	err = fprintf( file_out, "%s   : %s\n", title[19], krui_getPrunFunc() );
+	retchk( err );
+	err = fprintf( file_out, "%s   : %s\n", title[20], krui_getFFLearnFunc() );
+	retchk( err );
   }
-
   return( KRERR_NO_ERROR );
 }
 /*****************************************************************************
@@ -2016,15 +2016,14 @@ static char  *my_strstr(char *s, char *find)
 ******************************************************************************/
 
 static void  krio_readHeader(char *netfile_version, char *net_name, 
-			     char *learn_func, char *update_func,
-			     char *pruning_func, char *ff_learn_func,
-			     int *no_of_units, int *no_of_connect, 
-			     int *no_of_unitTypes, int *no_of_siteTypes)
+	     char *learn_func, char *update_func, char *init_func,  /* danysan */
+	     char *pruning_func, char *ff_learn_func,               /* danysan */
+	     int *no_of_units, int *no_of_connect,                  /* danysan */ 
+	     int *no_of_unitTypes, int *no_of_siteTypes)            /* danysan */
 {
   char  *cursor;
   int   ret_code,  i, no_of_scan_params,
         title_no;
-
 
   ret_code = 1;
 
@@ -2120,6 +2119,21 @@ static void  krio_readHeader(char *netfile_version, char *net_name,
           ret_code = 1;
         }
         break;
+
+      case 21:  /* "init function"  danysan */
+        ret_code = sscanf( cursor, " :%s\n", init_func );
+        if ((ret_code != 1) && (ret_code != 0))
+        {
+          KernelErrorCode = KRERR_FILE_SYNTAX;
+          return;
+        }
+        if (ret_code == 0)
+        {
+          *init_func = '\0';
+          ret_code = 1;
+        }
+	break;
+
       case 19:  /* pruning function */
         ret_code = sscanf( cursor, " :%s\n", pruning_func );
         if ((ret_code != 1) && (ret_code != 0))  {
@@ -2876,6 +2890,7 @@ krui_err  krio_loadNet(char *filename, char **netname, char **netfile_version)
                netfile_version_str[81],
                learn_func[81],
                update_func[81],
+               init_func[81],
                pruning_func[81],
                ff_learn_func[81];
 
@@ -2895,8 +2910,10 @@ krui_err  krio_loadNet(char *filename, char **netname, char **netfile_version)
   lineno = 1;
   if (NoOfUnits > 0)  krui_deleteNet();
 
-  krio_readHeader( netfile_version_str, netname_str, learn_func, update_func,
-                   pruning_func, ff_learn_func, &no_units, &no_connect, &no_unitT,
+  krio_readHeader( netfile_version_str, netname_str,
+                   learn_func, update_func, init_func,
+                   pruning_func, ff_learn_func,
+                   &no_units, &no_connect, &no_unitT,
 		   &no_siteT );
   if (KernelErrorCode)  goto ende;
 
@@ -2908,6 +2925,12 @@ krui_err  krio_loadNet(char *filename, char **netname, char **netfile_version)
     (void)  krui_setUpdateFunc( update_func );
     if (KernelErrorCode)  goto ende;
   }
+
+  if(*init_func != '\0')  { /* danysan */
+    (void)  krui_setInitialisationFunc( init_func );
+    if (KernelErrorCode)  goto ende;
+  }
+
   if(*pruning_func != '\0')  {
     (void) krui_setPrunFunc( pruning_func );
     if (KernelErrorCode)  goto ende;

@@ -1,7 +1,6 @@
 
 /*  A Bison parser, made from kr_pat_parse_bison.y
- by  GNU Bison version 1.25
-  */
+    by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
@@ -12,29 +11,29 @@
 #define yychar ppchar
 #define yydebug ppdebug
 #define yynerrs ppnerrs
-#define	L_BRACKET	258
-#define	R_BRACKET	259
-#define	VERSION_HEADER	260
-#define	GENERATED_AT	261
-#define	NO_OF_PATTERN	262
-#define	NO_OF_INPUT	263
-#define	NO_OF_OUTPUT	264
-#define	NO_OF_VAR_IDIM	265
-#define	NO_OF_VAR_ODIM	266
-#define	MAXIMUM_IDIM	267
-#define	MAXIMUM_ODIM	268
-#define	NO_OF_CLASSES	269
-#define	CLASS_REDISTRIB	270
-#define	REMAPFUNCTION	271
-#define	REMAP_PARAM	272
-#define	ERROR	273
-#define	PATTERNEND	274
-#define	PATTERNNOCLASS	275
-#define	NUMBER	276
-#define	NAME	277
-#define	V_NUMBER	278
+#define	L_BRACKET	257
+#define	R_BRACKET	258
+#define	VERSION_HEADER	259
+#define	GENERATED_AT	260
+#define	NO_OF_PATTERN	261
+#define	NO_OF_INPUT	262
+#define	NO_OF_OUTPUT	263
+#define	NO_OF_VAR_IDIM	264
+#define	NO_OF_VAR_ODIM	265
+#define	MAXIMUM_IDIM	266
+#define	MAXIMUM_ODIM	267
+#define	NO_OF_CLASSES	268
+#define	CLASS_REDISTRIB	269
+#define	REMAPFUNCTION	270
+#define	REMAP_PARAM	271
+#define	ERROR	272
+#define	PATTERNEND	273
+#define	PATTERNNOCLASS	274
+#define	NUMBER	275
+#define	NAME	276
+#define	V_NUMBER	277
 
-#line 59 "kr_pat_parse_bison.y"
+#line 20 "kr_pat_parse_bison.y"
 
 #include <config.h>
 
@@ -49,7 +48,7 @@
 #include "kr_newpattern.h"
 #include "kr_pat_parse.ph"
 
-#line 74 "kr_pat_parse_bison.y"
+#line 35 "kr_pat_parse_bison.y"
 typedef union
 {
 	float	value;		/* allgemeine Zahl */	
@@ -78,7 +77,7 @@ typedef union
 #define	YYFLAG		-32768
 #define	YYNTBASE	24
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 278 ? yytranslate[x] : 55)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 277 ? yytranslate[x] : 55)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -106,9 +105,9 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23
 };
 
 #if YYDEBUG != 0
@@ -140,11 +139,11 @@ static const short yyrhs[] = {    -1,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   101,   114,   129,   138,   147,   155,   160,   162,   173,   182,
-   186,   203,   207,   225,   229,   233,   238,   258,   264,   273,
-   277,   298,   301,   302,   305,   317,   321,   322,   328,   329,
-   332,   349,   350,   353,   362,   427,   435,   442,   451,   452,
-   459,   460,   463,   476,   481
+    62,    75,    90,    99,   108,   116,   121,   123,   134,   143,
+   147,   164,   168,   186,   190,   194,   199,   219,   225,   234,
+   238,   259,   262,   263,   266,   278,   282,   283,   289,   290,
+   293,   310,   311,   314,   323,   388,   396,   403,   412,   413,
+   420,   421,   424,   437,   442
 };
 #endif
 
@@ -232,7 +231,8 @@ static const short yycheck[] = {     4,
     17,    69,     6,    -1,    22,    21,    20,    -1,    23
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/local/share/bison.simple"
+#line 3 "/usr/share/bison.simple"
+/* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -249,46 +249,71 @@ static const short yycheck[] = {     4,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYPARSE_RETURN_TYPE
+#define YYPARSE_RETURN_TYPE int
+#endif
+
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -298,8 +323,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -380,12 +405,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-int yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -397,7 +422,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -412,10 +437,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -425,7 +450,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/local/share/bison.simple"
+#line 222 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -446,7 +471,18 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
 
-int
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+YYPARSE_RETURN_TYPE
+yyparse (void *);
+#else
+YYPARSE_RETURN_TYPE
+yyparse (void);
+#endif
+#endif
+
+YYPARSE_RETURN_TYPE
 yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
@@ -474,6 +510,9 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+#ifndef YYSTACK_USE_ALLOCA
+  int yyfree_stacks = 0;
+#endif
 
 #ifdef YYPURE
   int yychar;
@@ -558,18 +597,34 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+#ifndef YYSTACK_USE_ALLOCA
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
+#endif	    
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -730,7 +785,7 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 102 "kr_pat_parse_bison.y"
+#line 63 "kr_pat_parse_bison.y"
 {	
 		    current_pattern = 0;
 		    next_pattern_is_input = 1;
@@ -744,7 +799,7 @@ case 1:
 		;
     break;}
 case 2:
-#line 114 "kr_pat_parse_bison.y"
+#line 75 "kr_pat_parse_bison.y"
 {
 		    if (current_pattern < no_of_pattern ||
 			!next_pattern_is_input)
@@ -760,7 +815,7 @@ case 2:
 		;
     break;}
 case 3:
-#line 130 "kr_pat_parse_bison.y"
+#line 91 "kr_pat_parse_bison.y"
 {
 		if ((yyvsp[0].version.v == CURRENT_VERSION_V && yyvsp[0].version.r > CURRENT_VERSION_R) ||
 		    yyvsp[0].version.v > CURRENT_VERSION_V)
@@ -771,7 +826,7 @@ case 3:
 	;
     break;}
 case 4:
-#line 139 "kr_pat_parse_bison.y"
+#line 100 "kr_pat_parse_bison.y"
 {
 		no_of_pattern = (int) yyvsp[0].value;
 		if (no_of_pattern <= 0)
@@ -782,7 +837,7 @@ case 4:
 	;
     break;}
 case 5:
-#line 148 "kr_pat_parse_bison.y"
+#line 109 "kr_pat_parse_bison.y"
 {
 	    this_set->pub.classes = 0;
 	    this_set->pub.class_names = NULL;
@@ -791,14 +846,14 @@ case 5:
         ;
     break;}
 case 6:
-#line 155 "kr_pat_parse_bison.y"
+#line 116 "kr_pat_parse_bison.y"
 {
 	    this_set->pub.remap_function = NULL;
 	    this_set->pub.no_of_remap_params = 0;
 	;
     break;}
 case 8:
-#line 163 "kr_pat_parse_bison.y"
+#line 124 "kr_pat_parse_bison.y"
 { 
 		no_of_input = (int) yyvsp[0].value;
 		if (no_of_input < 0)
@@ -809,7 +864,7 @@ case 8:
 	;
     break;}
 case 9:
-#line 174 "kr_pat_parse_bison.y"
+#line 135 "kr_pat_parse_bison.y"
 { 
 		no_of_output = (int) yyvsp[0].value;
 		if (no_of_output < 0)
@@ -820,11 +875,11 @@ case 9:
 	;
     break;}
 case 10:
-#line 183 "kr_pat_parse_bison.y"
+#line 144 "kr_pat_parse_bison.y"
 { no_of_output = 0; ;
     break;}
 case 11:
-#line 187 "kr_pat_parse_bison.y"
+#line 148 "kr_pat_parse_bison.y"
 {
 		variable_input_dim = yyvsp[-2].value; 
 		if (variable_input_dim < 0 || 
@@ -843,11 +898,11 @@ case 11:
 	;
     break;}
 case 12:
-#line 204 "kr_pat_parse_bison.y"
+#line 165 "kr_pat_parse_bison.y"
 { variable_input_dim = 0; ;
     break;}
 case 13:
-#line 208 "kr_pat_parse_bison.y"
+#line 169 "kr_pat_parse_bison.y"
 {
 		variable_output_dim = yyvsp[-2].value; 
 		if (variable_output_dim < 0 || 
@@ -867,24 +922,24 @@ case 13:
 	;
     break;}
 case 14:
-#line 226 "kr_pat_parse_bison.y"
+#line 187 "kr_pat_parse_bison.y"
 { variable_output_dim = 0; ;
     break;}
 case 15:
-#line 230 "kr_pat_parse_bison.y"
+#line 191 "kr_pat_parse_bison.y"
 {
     with_classes = (int) yyvsp[0].value;
 ;
     break;}
 case 16:
-#line 234 "kr_pat_parse_bison.y"
+#line 195 "kr_pat_parse_bison.y"
 {
     with_classes = (int) yyvsp[-2].value;
     num_param = 0;
 ;
     break;}
 case 17:
-#line 239 "kr_pat_parse_bison.y"
+#line 200 "kr_pat_parse_bison.y"
 {
     int i;
 
@@ -906,13 +961,13 @@ case 17:
 ;
     break;}
 case 18:
-#line 259 "kr_pat_parse_bison.y"
+#line 220 "kr_pat_parse_bison.y"
 {
     with_classes = 0;
 ;
     break;}
 case 19:
-#line 265 "kr_pat_parse_bison.y"
+#line 226 "kr_pat_parse_bison.y"
 {
     this_set->pub.remap_function = strdup(yyvsp[0].name);
     if (!this_set->pub.remap_function)
@@ -923,13 +978,13 @@ case 19:
 ;
     break;}
 case 20:
-#line 274 "kr_pat_parse_bison.y"
+#line 235 "kr_pat_parse_bison.y"
 {
     num_param = 0;
 ;
     break;}
 case 21:
-#line 278 "kr_pat_parse_bison.y"
+#line 239 "kr_pat_parse_bison.y"
 {
     int i;
 
@@ -952,7 +1007,7 @@ case 21:
 ;
     break;}
 case 25:
-#line 306 "kr_pat_parse_bison.y"
+#line 267 "kr_pat_parse_bison.y"
 {
     num_param++;
     if (num_param > 1)
@@ -964,19 +1019,19 @@ case 25:
 ;
     break;}
 case 26:
-#line 318 "kr_pat_parse_bison.y"
+#line 279 "kr_pat_parse_bison.y"
 {
 			actual_dim_count = 0;
 		;
     break;}
 case 28:
-#line 323 "kr_pat_parse_bison.y"
+#line 284 "kr_pat_parse_bison.y"
 {
 		        actual_dim_count = 0;
 		;
     break;}
 case 31:
-#line 333 "kr_pat_parse_bison.y"
+#line 294 "kr_pat_parse_bison.y"
 {
 		if (actual_dim_count >= MAX_NO_OF_VAR_DIM)
 		{ 
@@ -993,7 +1048,7 @@ case 31:
 	;
     break;}
 case 34:
-#line 354 "kr_pat_parse_bison.y"
+#line 315 "kr_pat_parse_bison.y"
 {
     if (current_pattern >= no_of_pattern)
     { 
@@ -1003,7 +1058,7 @@ case 34:
 ;
     break;}
 case 35:
-#line 362 "kr_pat_parse_bison.y"
+#line 323 "kr_pat_parse_bison.y"
 {
     if (kr_np_GetDescriptor(pattern_set, current_pattern, &pattern)
 	!= KRERR_NO_ERROR)
@@ -1070,7 +1125,7 @@ case 35:
 ;
     break;}
 case 36:
-#line 427 "kr_pat_parse_bison.y"
+#line 388 "kr_pat_parse_bison.y"
 {
     if (act_size > 0)
     { 
@@ -1080,7 +1135,7 @@ case 36:
 ;
     break;}
 case 37:
-#line 435 "kr_pat_parse_bison.y"
+#line 396 "kr_pat_parse_bison.y"
 {
     if (with_classes == 0 || (next_pattern_is_input && no_of_output > 0))
 	scanner_await_no_class();
@@ -1089,7 +1144,7 @@ case 37:
 ;
     break;}
 case 38:
-#line 442 "kr_pat_parse_bison.y"
+#line 403 "kr_pat_parse_bison.y"
 {
     if (no_of_output > 0)
 	next_pattern_is_input = !next_pattern_is_input;
@@ -1099,13 +1154,13 @@ case 38:
 ;
     break;}
 case 40:
-#line 453 "kr_pat_parse_bison.y"
+#line 414 "kr_pat_parse_bison.y"
 {
     actual_dim_count = 0;
 ;
     break;}
 case 43:
-#line 464 "kr_pat_parse_bison.y"
+#line 425 "kr_pat_parse_bison.y"
 {
 		if (act_size == 0)
 		{ 
@@ -1118,13 +1173,13 @@ case 43:
 	;
     break;}
 case 44:
-#line 478 "kr_pat_parse_bison.y"
+#line 439 "kr_pat_parse_bison.y"
 {
     pattern->mysym = NULL;
 ;
     break;}
 case 45:
-#line 482 "kr_pat_parse_bison.y"
+#line 443 "kr_pat_parse_bison.y"
 {
     if (kr_np_lookupSym(pattern_set, yyvsp[0].name, &this_class) != KRERR_NO_ERROR)
     { 
@@ -1139,7 +1194,7 @@ case 45:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/local/share/bison.simple"
+#line 554 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1334,8 +1389,36 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+#ifndef YYSTACK_USE_ALLOCA
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+#endif
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+#ifndef YYSTACK_USE_ALLOCA
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+#endif    
+  return 1;
 }
-#line 495 "kr_pat_parse_bison.y"
+#line 456 "kr_pat_parse_bison.y"
 
 
 /*****************************************************************************

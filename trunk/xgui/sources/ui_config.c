@@ -70,6 +70,7 @@ int ui_cfg_save (FILE *filePtr)
     int    err;
     int    i, count = 0;
     int    in, out;
+    int		cc_flg;  /* danysan */
     struct Ui_DisplayType *listPtr;
     pattern_set_info   patt_info;
     pattern_descriptor descrip;
@@ -107,29 +108,32 @@ int ui_cfg_save (FILE *filePtr)
     retchk(err);
 
     krui_getFuncParamInfo(krui_getLearnFunc(), LEARN_FUNC, &in, &out);
-    if(strcmp(krui_getLearnFunc(),"CC") == 0)
-	err = fprintf(filePtr,"Learn parameters: %d\n", 
-		      UI_NO_LEARN_PARAMS+UI_NO_OF_CASCADE_PARAMS);
+    cc_flg = strcmp(krui_getLearnFunc(),"CC"); /* danysan */
+    if( cc_flg == 0)  /* danysan */
+	err = fprintf(filePtr,"Learn parameters: %d\n", UI_NO_LEARN_PARAMS+UI_NO_OF_CASCADE_PARAMS);
     else
 	err = fprintf(filePtr,"Learn parameters: %d\n", in);
     retchk(err);
-    for (i=0; i<in; i++) {
-	if (ui_controlIsCreated) {
-	    err = fprintf(filePtr,"param %d: %9.5f\n",i+1,
-			 ui_xFloatFromAsciiWidget(ui_learnParameterWidgets[i]));
-	}else{
-	    err = fprintf(filePtr,"param %d: %9.5f\n",i+1,
-			  ui_learnParameters[i]);
-	}
+    for (i=0; i<in; i++)
+    {
+	if (ui_controlIsCreated) 
+	    err = fprintf(filePtr,"param %d: %9.5f\n",i+1, ui_xFloatFromAsciiWidget(ui_learnParameterWidgets[i]));
+	else
+	    err = fprintf(filePtr,"param %d: %9.5f\n",i+1, ui_learnParameters[i]);
 	retchk(err);
     }
-    cc_readElements();
-    for (i=in; i<UI_NO_LEARN_PARAMS+UI_NO_OF_CASCADE_PARAMS; i++) {
-	err = fprintf(filePtr,"param %d: %9.5f\n",i+1, ui_learnParameters[i]);
-	retchk(err);
+
+    if ( cc_flg == 0 ) /* danysan */
+    {
+        cc_readElements();
+        for (i=in; i<UI_NO_LEARN_PARAMS+UI_NO_OF_CASCADE_PARAMS; i++)
+        {
+	    err = fprintf(filePtr,"param %d: %9.5f\n",i+1, ui_learnParameters[i]);
+	    retchk(err);
+        }
+        err = fprintf(filePtr,"\n");
+        retchk(err);
     }
-    err = fprintf(filePtr,"\n");
-    retchk(err);
 
     krui_getFuncParamInfo(krui_getUpdateFunc(), UPDATE_FUNC, &in, &out);
     err = fprintf(filePtr,"Update parameters: %d\n", in);
