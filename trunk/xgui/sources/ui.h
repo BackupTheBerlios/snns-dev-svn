@@ -21,8 +21,8 @@
 
 ******************************************************************************/
 
-#ifndef __ui
-#define __ui
+#ifndef snns_ui
+#define snns_ui
 
 /* X11 */
 
@@ -66,7 +66,7 @@
 
 /***************************** misc    ********************************/
 
-#define MAX_NAME_LENGTH 100
+#define MAX_NAME_LENGTH 4096
 
 #define UI_ASCII_BLANK   32
 

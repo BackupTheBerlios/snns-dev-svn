@@ -49,7 +49,8 @@ KERNELSOURCES_C    = kernel.c \
                      kr_amap.c \
 		     kr_pat_parse.c \
                      kr_newpattern.c\
-                     kr_JordElm.c
+                     kr_JordElm.c\
+		     kr_rand.c
 
 USR_FUNC_SOURCES_C = func_tbl.c \
                      init_f.c \

@@ -41,8 +41,8 @@ Bool      ui_fileIsCreated = FALSE; /* file panel created yes or no */
 
 
 #define SELECTED_NAME_LENGTH   1024
-#define MAX_DIR_ENTRIES        1024
-#define DIR_BUFFER_LENGTH      4096
+#define MAX_DIR_ENTRIES 4096
+#define DIR_BUFFER_LENGTH 524288
 
 
 static void ui_changeDirectory (char []);

@@ -32,6 +32,10 @@
 #include "error.h"
 #include "memory.h"           /* for re_malloc */
 
+#ifndef MAXFLOAT
+#include <float.h>
+#define MAXFLOAT FLT_MAX
+#endif
 
 /*****************************************************************************
   FUNCTION : st_init

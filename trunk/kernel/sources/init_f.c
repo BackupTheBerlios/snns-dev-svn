@@ -62,6 +62,14 @@ krui_err  INIT_randomizeWeights(float *parameterArray, int NoOfParams)
     register struct Unit   *unit_ptr;
     register FlintType     range, min_weight;
     FlintType   max_weight;
+    /* make sure the random number generator is initialized before
+       this function is run */
+    static char notfirstrun;
+
+    if(notfirstrun == 0) {
+	krui_setSeedNo(0);
+	notfirstrun = 1;
+    }
 
     if ( (unit_array == NULL) || (NoOfUnits == 0) )
 	return( KRERR_NO_UNITS ); /*  there is nothing to do  */

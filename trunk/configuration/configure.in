@@ -101,7 +101,7 @@ if eval "test $BISON = \":\""; then
     AC_MSG_WARN(or after 'make maintainer-clean' in any sources directory.)
 else
     AC_MSG_CHECKING(for version of bison)
-    bison_version=`$BISON --version`
+    bison_version=`$BISON --version | head -n 1`
     AC_MSG_RESULT($bison_version)
     warn_bison=yes
     AC_TRY_RUN(

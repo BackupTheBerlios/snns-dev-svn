@@ -39,6 +39,10 @@
 #include <sys/times.h>
 #include <sys/utsname.h>
 
+#ifndef SIGIOT
+#define SIGIOT SIGABRT
+#endif
+
 #include "glob_typ.h"   /* SNNS-Kernel constants and data type definitions  */
 #include "kr_ui.h"      /* SNNS-Kernel User-Interface Function Prototypes   */
 #include "kr_typ.h"

@@ -36,6 +36,9 @@
 #endif
 #include <ctype.h>
 
+#include <limits.h>
+#define MAXINT INT_MAX
+
 #include "kr_typ.h"		/* Kernel Types and Constants  */
 #include "kr_const.h"		/* Constant Declarators for SNNS-Kernel  */
 #include "kr_def.h"		/* Default Values  */

@@ -492,7 +492,7 @@ int ui_cfg_load (FILE *filePtr)
 	err = fscanf(filePtr,"%*[^:]: %d\n", &noParams);
 	chkretline(1);
 	lines++;
-	for (i=0; (i<UI_NO_LEARN_PARAMS+UI_NO_OF_CASCADE_PARAMS); i++){
+	for (i=0; (i<UI_NO_LEARN_PARAMS+UI_NO_OF_CASCADE_PARAMS) && (i<noParams); i++){
 	    err = fscanf(filePtr,"%*[^:]: %f\n", &ui_learnParameters[i]);
 	    chkretline(1);
 	    lines++;

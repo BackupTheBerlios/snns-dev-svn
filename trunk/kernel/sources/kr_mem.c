@@ -27,7 +27,7 @@
 #else
 #include <math.h>
 #endif
-
+#include <limits.h>
 
 #include "kr_typ.h"	 /*  Kernel Types and Constants  */
 #include "kernel.h"
@@ -36,6 +36,11 @@
 
 #include "kr_mem.ph"	 /*  Function prototypes  */
 #include "kr_mac.h"	 /*  Kernel Macros  */
+
+
+#ifndef MAXSHORT
+#define MAXSHORT SHRT_MAX
+#endif
 
 /*  ULTRIX-32 Operating System	*/
 #if defined (ultrix) || defined (__BORLANDC__) 

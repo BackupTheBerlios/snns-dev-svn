@@ -26,7 +26,7 @@ include ../../Makefile.def
 
 # Define final C-preprocessor options for the kernel
 # Additional definitions like -I... and -D... go here
-CPPFLAGS           = -I../.. \
+CPPFLAGS           += -I../.. \
                      -I../../$(KERNELSRCDIR) \
                      -I../../$(XGUIICONSDIR) \
                      $(X_CFLAGS) $(ENZOFLAGS)
@@ -203,7 +203,7 @@ $(KERNELLIBS): ../../Makefile.def ../../$(KERNELSRCDIR)/Makefile \
 
 xgui: $(LIBXGUI1) $(LIBXGUI2) $(BN3DLIB) $(KERNELLIBS)
 	$(CC) $(LIBXGUI1) $(LIBXGUI2) $(BN3DLIB) \
-	$(X_LIBS) -lXaw -lXmu -lXt -lXext $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS) \
+	$(X_LIBS) -lXaw3d -lXmu -lXt -lXext $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS) \
 	$(KERNELALLLIBS) -o xgui 
 
 # Dependencies

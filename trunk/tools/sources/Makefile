@@ -26,7 +26,7 @@ include ../../Makefile.def
 
 # Define final C-preprocessor options for the kernel
 # Additional definitions like -I... and -D... go here
-CPPFLAGS           = -I../.. \
+CPPFLAGS           += -I../.. \
                      -I../../$(KERNELSRCDIR) \
                      $(ENZOFLAGS)
 
@@ -177,43 +177,43 @@ $(KERNELLIBS): ../../Makefile.def ../../$(KERNELSRCDIR)/Makefile \
 # Linking of single programs based on kernel parts
 
 snns2c: snns2c.o snns2clib.o $(KERNELLIBS)
-	$(CC) snns2c.o snns2clib.o $(KERNELALLLIBS) -o snns2c
+	$(CC) $(LDFLAGS) snns2c.o snns2clib.o $(KERNELALLLIBS) -o snns2c
 
 pat_sel: pat_sel.o $(KERNELLIBS)
-	$(CC) pat_sel.o $(KERNELALLLIBS) -o pat_sel
+	$(CC) $(LDFLAGS) pat_sel.o $(KERNELALLLIBS) -o pat_sel
 
 netlearn: netlearn.o $(KERNELLIBS)
-	$(CC) netlearn.o $(KERNELALLLIBS) -o netlearn
+	$(CC) $(LDFLAGS) netlearn.o $(KERNELALLLIBS) -o netlearn
 
 td_bignet: td_bignet.o $(KERNELLIBS)
-	$(CC) td_bignet.o $(KERNELALLLIBS) -o td_bignet
+	$(CC) $(LDFLAGS) td_bignet.o $(KERNELALLLIBS) -o td_bignet
 
 ff_bignet: ff_bignet.o $(KERNELLIBS)
-	$(CC) ff_bignet.o $(KERNELALLLIBS) -o ff_bignet
+	$(CC) $(LDFLAGS) ff_bignet.o $(KERNELALLLIBS) -o ff_bignet
 
 netperf: netperf.o $(KERNELLIBS)
-	$(CC) netperf.o $(KERNELALLLIBS) -o netperf
+	$(CC) $(LDFLAGS) netperf.o $(KERNELALLLIBS) -o netperf
 
 snnsbat: snnsbat.o $(KERNELLIBS)
-	$(CC) snnsbat.o $(KERNELALLLIBS) -o snnsbat
+	$(CC) $(LDFLAGS) snnsbat.o $(KERNELALLLIBS) -o snnsbat
 
 feedback-gennet: feedback-gennet.o $(KERNELLIBS)
-	$(CC) feedback-gennet.o $(KERNELALLLIBS) -o feedback-gennet
+	$(CC) $(LDFLAGS) feedback-gennet.o $(KERNELALLLIBS) -o feedback-gennet
 
 convert2snns: convert2snns.o $(KERNELLIBS)
-	$(CC) convert2snns.o $(KERNELALLLIBS) -o convert2snns
+	$(CC) $(LDFLAGS) convert2snns.o $(KERNELALLLIBS) -o convert2snns
 
 isnns: isnns.o $(KERNELLIBS)
-	$(CC) isnns.o $(KERNELALLLIBS) -o isnns
+	$(CC) $(LDFLAGS) isnns.o $(KERNELALLLIBS) -o isnns
 
 linknets: linknets.o snns2clib.o $(KERNELLIBS)
-	$(CC) linknets.o snns2clib.o $(KERNELALLLIBS) -o linknets
+	$(CC) $(LDFLAGS) linknets.o snns2clib.o $(KERNELALLLIBS) -o linknets
 
 
 # Linking of batchman
 
 batchman: $(BATCH_OBJECTS) $(KERNELLIBS)
-	$(CC) $(BATCH_OBJECTS) $(KERNELALLLIBS) -o batchman
+	$(CC) $(LDFLAGS) $(BATCH_OBJECTS) $(KERNELALLLIBS) -o batchman
 
 # Parser generation for batchman
 
