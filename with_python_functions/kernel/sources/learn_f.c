@@ -143,7 +143,7 @@ void propagateNetForward(int pattern_no, int sub_pat_no)
 	unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
 			kr_PythonActFunction(unit_ptr->python_act_func,
 						unit_ptr) :
-			(unit_ptr->act_func) (unit_ptr)) ;
+			(*unit_ptr->act_func) (unit_ptr)) ;
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* identity output function: there is no need to call the output
@@ -2869,7 +2869,7 @@ static float propagateNet_CPN(int pattern_no, int sub_pat_no, float alpha,
 		((unit_ptr->act_func == ACT_Custom_Python) ? 
 			kr_PythonActFunction(unit_ptr->python_act_func,
 						unit_ptr) :
-			(unit_ptr->act_func) (unit_ptr)) ;
+			(*unit_ptr->act_func) (unit_ptr)) ;
 
 	devit = *out_pat++ - unit_ptr->Out.output;    /* calculate devitation */
 	sum_error += devit * devit;
@@ -3045,7 +3045,7 @@ static void propagateNetForward_perc(int pattern_no, int sub_pat_no)
 	unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
 			kr_PythonActFunction(unit_ptr->python_act_func,
 						unit_ptr) :
-			(unit_ptr->act_func) (unit_ptr)) ;
+			(*unit_ptr->act_func) (unit_ptr)) ;
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* identity output function: there is no need to call the output
@@ -3074,7 +3074,7 @@ static void propagateNetForward_perc(int pattern_no, int sub_pat_no)
 	unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
 			kr_PythonActFunction(unit_ptr->python_act_func,
 						unit_ptr) :
-			(unit_ptr->act_func) (unit_ptr)) ;
+			(*unit_ptr->act_func) (unit_ptr)) ;
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* identity output function: there is no need to call the output
@@ -3454,7 +3454,7 @@ krui_err  RbfLearnForward(int pattern_no, int sub_pat_no)
 	    ((unit_ptr->act_func == ACT_Custom_Python) ? 
 			kr_PythonActFunction(unit_ptr->python_act_func,
 						unit_ptr) :
-			(unit_ptr->act_func) (unit_ptr)) ;
+			(*unit_ptr->act_func) (unit_ptr)) ;
 
 	unit_ptr->value_c = 0.0;
     }
@@ -3601,9 +3601,9 @@ float RbfLearnAdjustDelta(float para_center, float para_bias,
 	    if (!IS_SPECIAL_UNIT(curr_unit))
 		curr_unit->bias += para_bias * curr_unit->value_c *
 		    ((curr_unit->act_deriv_func == ACT_DERIV_Custom_Python) ? 
-			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
-						unit_ptr) :
-			(unit_ptr->act_deriv_func) (unit_ptr)) ;
+			kr_PythonActFunction(curr_unit->python_act_deriv_func,
+						curr_unit) :
+			(*curr_unit->act_deriv_func) (curr_unit)) ;
 #else
 	    curr_unit->value_b += curr_unit->value_c *
 		((curr_unit->act_deriv_func == ACT_DERIV_Custom_Python) ? 
