@@ -42,6 +42,10 @@
 
 #include "init_f.ph"
 
+extern FlintType ACT_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_DERIV_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_2_DERIV_Custom_Python(struct Unit * unit_ptr);
+
 
 
 /*****************************************************************************
@@ -607,6 +611,8 @@ krui_err INIT_Weights_CPN_Rand_Pat(float *parameterArray, int NoOfParams)
 
   UPDATE   : 
 ******************************************************************************/
+extern FlintType OUT_Custom_Python(FlintType act);
+
 void RbfInitSetCenter(int pattern_no, int sub_pat_no, 
 		      struct Unit *hidden_unit, float deviation, float bias)
 {
@@ -624,8 +630,17 @@ void RbfInitSetCenter(int pattern_no, int sub_pat_no,
 
 	/* go through all input units, set activation and calculate output: */
 	unit_ptr -> act = *current_in_pattern++;
-	unit_ptr -> Out.output = unit_ptr -> out_func == OUT_IDENTITY 
-	    ? unit_ptr -> act : (*unit_ptr -> out_func) (unit_ptr -> act);
+	if (unit_ptr->out_func == OUT_IDENTITY)
+		/*  identity output function: don't call the output function */
+		unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
+	else
+		/*  no identity output function: calculate unit's output also */
+		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
+
     }
 
     /* set the weights of the links: */
@@ -863,7 +878,10 @@ krui_err  RbfInitNetwork(int start_pat, int end_pat, float i_bias,
 
 	    /* calculate activation: */
 	    h_unit_ptr -> act = h_unit_ptr -> Out.output =
-		(*h_unit_ptr -> act_func) (h_unit_ptr);
+		((h_unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(h_unit_ptr->python_act_func,
+						h_unit_ptr) :
+			(h_unit_ptr->act_func) (h_unit_ptr)) ;
 
 	    /* store it into the symmetric matrix: */
 	    RbfMatrixSetValue(&inter_act, h_unit_nr, unit_nr,
@@ -1079,10 +1097,21 @@ void RbfKohonenConvexInit(int start_pattern,int end_pattern,float alpha_start,
 		    /* calculate output using the convex combination	*/
 		    /* method						*/
 		    unit_ptr -> act = *current_in_pattern++;
-		    unit_ptr -> Out.output = unit_ptr->out_func==OUT_IDENTITY 
-			? alpha * (unit_ptr -> act) + norm_alpha
-			: alpha * ((*unit_ptr -> out_func) (unit_ptr -> act))
-				+ norm_alpha;
+
+			if (unit_ptr->out_func == OUT_IDENTITY)
+			/*  identity output function: don't call the output function */
+				unit_ptr->Out.output = alpha * 
+					(unit_ptr -> act) + norm_alpha;
+			    else if(unit_ptr->out_func == OUT_Custom_Python)
+					unit_ptr->Out.output =
+					alpha *
+					kr_PythonOutFunction(unit_ptr->python_out_func,
+						unit_ptr->act) + norm_alpha;
+			    else
+				/*  no identity output function: calculate unit's output also */
+				unit_ptr->Out.output = alpha * (*unit_ptr->out_func) (unit_ptr->act) + norm_alpha;
+
+		    
 		}
 
 		/* determine the hidden unit with maximum scalar product*/
@@ -1230,9 +1259,19 @@ krui_err RbfKohonenInit(int start_pattern, int end_pattern, float learn_rate, in
 		/* calculate output using the convex combination	*/
 		/* method						*/
 		unit_ptr -> act = *current_in_pattern++;
-		unit_ptr -> Out.output = unit_ptr->out_func==OUT_IDENTITY 
-			? (unit_ptr -> act)
-			: ((*unit_ptr -> out_func) (unit_ptr -> act));
+
+		    if (unit_ptr->out_func == OUT_IDENTITY)
+			/*  identity output function: don't call the output function */
+			unit_ptr->Out.output = unit_ptr->act;
+		    else if(unit_ptr->out_func == OUT_Custom_Python)
+			unit_ptr->Out.output = 
+				kr_PythonOutFunction(unit_ptr->python_out_func,
+					unit_ptr->act);
+		    else
+			/*  no identity output function: calculate unit's output also */
+			unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
+
+		
 	    }
 
 	    FOR_ALL_LINKS(hidden_unit, link_ptr)
@@ -1284,9 +1323,19 @@ krui_err RbfKohonenInit(int start_pattern, int end_pattern, float learn_rate, in
 		    /* calculate output using the convex combination	*/
 		    /* method						*/
 		    unit_ptr -> act = *current_in_pattern++;
-		    unit_ptr -> Out.output = unit_ptr->out_func==OUT_IDENTITY 
-			? (unit_ptr -> act)
-			: ((*unit_ptr -> out_func) (unit_ptr -> act));
+
+		    if (unit_ptr->out_func == OUT_IDENTITY)
+			/*  identity output function: don't call the output function */
+			unit_ptr->Out.output = unit_ptr->act;
+		    else if(unit_ptr->out_func == OUT_Custom_Python)
+			unit_ptr->Out.output = 
+				kr_PythonOutFunction(unit_ptr->python_out_func,
+					unit_ptr->act);
+		    else
+			unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
+
+		
+		    
 		}
 
 		/* determine the hidden unit with maximum scalar product*/

@@ -58,36 +58,44 @@ GROUP: Functions
   RETURNS  :
   UPDATE   : 
 ******************************************************************************/
+extern FlintType OUT_Custom_Python(FlintType act);
+extern FlintType ACT_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_DERIV_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_2_DERIV_Custom_Python(struct Unit * unit_ptr);
 
 static krui_err  krf_getInternalFuncInfo(int mode, struct FuncInfoDescriptor *func_descr)
 {
   struct FuncTable  *ftbl_ptr;
   unsigned short  func_type;
 
-
   KernelErrorCode = KRERR_NO_ERROR;
 
   switch (mode)  {
     case  GET_NO_OF_FUNCS:
-      func_descr->number = NoOfKernelFuncs;
+      func_descr->number = NoOfKernelFuncs + kr_getNoOfPythonFunctions();
       break;
 
     case  GET_FUNC_INFO:  /*  return all info about given function  */
-      if ((func_descr->number < 0) || (func_descr->number >= NoOfKernelFuncs))  {
+      if ((func_descr->number < 0) || (func_descr->number >= 
+      			(NoOfKernelFuncs + kr_getNoOfPythonFunctions())))  {
         KernelErrorCode = KRERR_PARAMETERS;
         return( KernelErrorCode );
       }
 
-      ftbl_ptr = kernel_func_table + func_descr->number;
+      if(func_descr->number < NoOfKernelFuncs) {
+	      ftbl_ptr = kernel_func_table + func_descr->number;
 
-      strcpy( func_descr->func_name, ftbl_ptr->func_name );
-      func_descr->func_type = ftbl_ptr->func_type & ~DEFAULT_FUNC;
-      func_descr->no_of_input_parameters = ftbl_ptr->no_of_input_parameters;
-      func_descr->no_of_output_parameters = ftbl_ptr->no_of_output_parameters;
-      func_descr->function = ftbl_ptr->function;
-#ifdef PARAGON_KERNEL
-      func_descr->parallelized = ftbl_ptr->parallelized;
-#endif
+	      strcpy( func_descr->func_name, ftbl_ptr->func_name );
+	      func_descr->func_type = ftbl_ptr->func_type & ~DEFAULT_FUNC;
+	      func_descr->no_of_input_parameters = ftbl_ptr->no_of_input_parameters;
+	      func_descr->no_of_output_parameters = ftbl_ptr->no_of_output_parameters;
+	      func_descr->function = ftbl_ptr->function;
+	#ifdef PARAGON_KERNEL
+	      func_descr->parallelized = ftbl_ptr->parallelized;
+	#endif
+	} else { /* Must be a Python function */
+		KernelErrorCode = kr_getPythonFuncInfo(mode, func_descr);
+	}
       break;
 
     case  SEARCH_FUNC:  /*  search for the given function and return the
@@ -108,7 +116,31 @@ static krui_err  krf_getInternalFuncInfo(int mode, struct FuncInfoDescriptor *fu
           return( KRERR_NO_ERROR );
         }
       }
-
+      KernelErrorCode = kr_getPythonFuncInfo(mode,func_descr);
+      if(!KernelErrorCode)  {
+      		switch (func_descr->func_type) {
+			case OUT_FUNC:
+				func_descr->function = 
+					(FunctionPtr)OUT_Custom_Python;
+				break;
+			case ACT_FUNC:
+				func_descr->function = 
+					(FunctionPtr)ACT_Custom_Python;
+				break;
+			case ACT_DERIV_FUNC:
+				func_descr->function =
+					(FunctionPtr)ACT_DERIV_Custom_Python;
+				break;
+			case ACT_2_DERIV_FUNC:
+				func_descr->function =
+					(FunctionPtr)ACT_2_DERIV_Custom_Python;
+				break;	
+			default:
+				fputs("Unhandled Python function type\n",
+					stderr);
+		}
+      		return KRERR_NO_ERROR;
+      }
       func_descr->function = NULL;
 #ifdef PARAGON_KERNEL
       func_descr->parallelized = ftbl_ptr->parallelized;
@@ -164,7 +196,8 @@ static krui_err  krf_getInternalFuncInfo(int mode, struct FuncInfoDescriptor *fu
 
           return( KRERR_NO_ERROR );
         }
-
+      KernelErrorCode = kr_getPythonFuncInfo(GET_FUNC_NAME,func_descr);
+      if(KernelErrorCode == KRERR_NO_ERROR) return KRERR_NO_ERROR;
       func_descr->func_type = 0;
       break;
 

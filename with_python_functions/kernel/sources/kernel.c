@@ -57,6 +57,14 @@
 #include "kr_amap.h"     /*  Prototypes and global defs for ARTMAP  */
 #include "kr_JordElm.h"
 
+extern FlintType OUT_Custom_Python(FlintType act);
+extern FlintType ACT_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_DERIV_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_2_DERIV_Custom_Python(struct Unit * unit_ptr);
+
+PyObject *kr_findPythonFunction(char *name, int type);
+FlintType kr_PythonOutFunction(PyObject *func, FlintType activation);
+
 /*****************************************************************************
   FUNCTION : kr_countUnits
 
@@ -331,6 +339,10 @@ int  kr_makeDefaultUnit(void)
   unit_ptr->act_func = DefaultUFuncAct;       /*  default activation function */
   unit_ptr->act_deriv_func = DefaultUFuncActDeriv; /* def. derivation actfunc */
   unit_ptr->act_2_deriv_func = DefaultUFuncAct2Deriv; 	/*  default derivation act. function */
+  unit_ptr->python_out_func = DefaultUPythonFuncOut;       /*  default output function  */
+  unit_ptr->python_act_func = DefaultUPythonFuncAct;       /*  default activation function */
+  unit_ptr->python_act_deriv_func = DefaultUPythonFuncActDeriv; /* def. derivation actfunc */
+  unit_ptr->python_act_2_deriv_func = DefaultUPythonFuncAct2Deriv; 	/*  default derivation act. function */
   unit_ptr->unit_name= NULL;			/*  default is no unit name */
   unit_ptr->subnet_no  = DefaultSubnetNo;
   unit_ptr->layer_no   = DefaultLayerNo;
@@ -398,9 +410,21 @@ int  kr_createUnit(char *unit_name, char *out_func_name, char *act_func_name,
   unit_ptr = unit_array + unit_no;
 
   unit_ptr->out_func  = (OutFuncPtr) out_func_ptr;
+  if(unit_ptr->out_func == OUT_Custom_Python) {
+  	unit_ptr->python_out_func =
+		kr_findPythonFunction(out_func_name, OUT_FUNC);
+  }		
   unit_ptr->act_func  = (ActFuncPtr) act_func_ptr;
   unit_ptr->act_deriv_func = (ActDerivFuncPtr) act_deriv_func_ptr;
   unit_ptr->act_2_deriv_func = (ActDerivFuncPtr) act_2_deriv_func_ptr;
+  if(unit_ptr->act_func == ACT_Custom_Python) {
+  	unit_ptr->python_act_func =
+		kr_findPythonFunction(act_func_name, ACT_FUNC);
+  	unit_ptr->python_act_deriv_func =
+		kr_findPythonFunction(act_func_name, ACT_DERIV_FUNC);
+  	unit_ptr->python_act_2_deriv_func =
+		kr_findPythonFunction(act_func_name, ACT_DERIV_FUNC);
+  }
   unit_ptr->unit_name = str_ptr;
 
   NetModified = TRUE;
@@ -2317,6 +2341,10 @@ void   kr_changeFtypeUnits(struct FtypeUnitStruct *Ftype_entry)
         unit_ptr->out_func = Ftype_entry->out_func;
         unit_ptr->act_deriv_func = Ftype_entry->act_deriv_func;
         unit_ptr->act_2_deriv_func = Ftype_entry->act_2_deriv_func;
+        unit_ptr->python_act_func = Ftype_entry->python_act_func;
+        unit_ptr->python_out_func = Ftype_entry->python_out_func;
+        unit_ptr->python_act_deriv_func = Ftype_entry->python_act_deriv_func;
+        unit_ptr->python_act_2_deriv_func = Ftype_entry->python_act_2_deriv_func;
         }
       }
 
@@ -2385,6 +2413,10 @@ int  kr_makeFtypeUnit(char *Ftype_symbol)
   unit_ptr->act_func    = ftype_ptr->act_func;
   unit_ptr->act_deriv_func = ftype_ptr->act_deriv_func;
   unit_ptr->act_2_deriv_func = ftype_ptr->act_2_deriv_func;
+  unit_ptr->python_out_func    = ftype_ptr->python_out_func;
+  unit_ptr->python_act_func    = ftype_ptr->python_act_func;
+  unit_ptr->python_act_deriv_func = ftype_ptr->python_act_deriv_func;
+  unit_ptr->python_act_2_deriv_func = ftype_ptr->python_act_2_deriv_func;
 
   ftype_site = ftype_ptr->sites;
 
@@ -2459,6 +2491,11 @@ void    kr_changeFtypeUnit(struct Unit *unit_ptr,
   unit_ptr->act_func = ftype_ptr->act_func;
   unit_ptr->act_deriv_func = ftype_ptr->act_deriv_func;
   unit_ptr->act_2_deriv_func = ftype_ptr->act_2_deriv_func;
+  unit_ptr->python_out_func = ftype_ptr->python_out_func;
+  unit_ptr->python_act_func = ftype_ptr->python_act_func;
+  unit_ptr->python_act_deriv_func = ftype_ptr->python_act_deriv_func;
+  unit_ptr->python_act_2_deriv_func = ftype_ptr->python_act_2_deriv_func;
+
 
   flags = unit_ptr->flags & UFLAG_INPUT_PAT;
 
@@ -2680,7 +2717,10 @@ void    kr_updateUnitOutputs(void)
       if (unit_ptr->out_func == NULL)
         /*  Identity Function   */
         unit_ptr->Out.output = unit_ptr->act;
-      else
+      else if(unit_ptr->out_func == OUT_Custom_Python)
+      	unit_ptr->Out.output = kr_PythonOutFunction(unit_ptr->python_out_func,
+						unit_ptr->act);
+      else						
         unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
       }
 }
@@ -2852,6 +2892,14 @@ krui_err  kr_setUnitDefaults(FlintTypeParam act, FlintTypeParam bias,
   DefaultUFuncAct   = (ActFuncPtr) act_func_ptr;
   DefaultUFuncActDeriv = (ActDerivFuncPtr) act_deriv_func_ptr;
   DefaultUFuncAct2Deriv = (ActDerivFuncPtr) act_2_deriv_func_ptr;
+  if(DefaultUFuncOut == OUT_Custom_Python) {
+	  DefaultUPythonFuncOut   = kr_findPythonFunction(out_func,OUT_FUNC);
+  }  
+  if(DefaultUFuncAct == ACT_Custom_Python) {	  
+	  DefaultUPythonFuncAct   = kr_findPythonFunction(act_func,ACT_FUNC);
+	  DefaultUPythonFuncActDeriv = kr_findPythonFunction(act_func,ACT_DERIV_FUNC);
+	  DefaultUPythonFuncAct2Deriv = kr_findPythonFunction(act_func,ACT_2_DERIV_FUNC);
+  }
 
   return( KernelErrorCode );
 }
@@ -4329,3 +4377,77 @@ krui_err  kr_getMasParStatus(void)
 
 #endif
 
+/*****************************************************************************
+
+  Note: This is not part of the official SNNS distribution, but provided
+  by the snns-dev project (http://snns-dev.berlios.de)
+
+  The point where the Python extension hooks in - this wrapper layer shall
+  make sure that the SNNS kernel can still be compiled without having Python,
+  even with the Python patch applied.
+
+******************************************************************************/
+
+FlintType (*kr_PythonOutFunctionHook)(PyObject *func, FlintType activation);
+FlintType (*kr_PythonActFunctionHook)(PyObject *func, struct Unit *unit_ptr);
+PyObject *(*kr_findPythonFunctionHook)(char *func, int type);
+int (*kr_getNoOfPythonFunctionsHook)();
+krui_err (*kr_getPythonFuncInfoHook)(int mode, struct FuncInfoDescriptor *descr);
+
+int kr_getNoOfPythonFunctions()
+{
+	if(!kr_getNoOfPythonFunctionsHook) {
+		fputs("No callback for number of Python functions found\n",
+			stderr);
+		return 0;	
+	} else {	
+		return kr_getNoOfPythonFunctionsHook();
+	}	
+}
+
+krui_err kr_getPythonFuncInfo(int mode, struct FuncInfoDescriptor *descr)
+{
+	if(!kr_getPythonFuncInfoHook) {
+		fputs("No Python function info callback found\n",stderr);
+		return KRERR_PARAMETERS;
+	} else {
+		return kr_getPythonFuncInfoHook(mode, descr);
+	}
+}
+
+
+FlintType kr_PythonOutFunction(PyObject *func, FlintType activation)
+{
+	if(!kr_PythonOutFunctionHook) {
+		fputs("The Python output function you are requesting "
+		        "can not be called because there is no callback "
+			"registered.\n",stderr);
+		return 0;
+	} else {
+		return kr_PythonOutFunctionHook(func, activation);
+	}
+}
+
+FlintType kr_PythonActFunction(PyObject *func, struct Unit *unit_ptr)
+{
+	if(!kr_PythonActFunctionHook) {
+		fputs("The Python activation function you are requesting "
+		        "can not be called because there is no callback "
+			"registered.\n",stderr);
+		return 0;
+	} else {
+		return kr_PythonActFunctionHook(func, unit_ptr);
+	}
+}
+
+
+PyObject *kr_findPythonFunction(char *name, int type)
+{
+	if(!kr_findPythonFunctionHook) {
+		fputs("Can't check for Python functions because there is "
+		      "no callback registered.\n",stderr);
+		return NULL;      
+	} else {
+		return kr_findPythonFunctionHook(name, type);
+	}	
+}

@@ -48,6 +48,8 @@
 #include "func_mac.h" 
 #include "kr_newpattern.h"
 
+extern FlintType OUT_Custom_Python(FlintType act);
+
 /*#################################################
 
 GROUP: Update Functions
@@ -81,6 +83,10 @@ krui_err  UPDATE_syncPropagate(float *parameterArray, int NoOfParams)
 	    if (unit_ptr->out_func == OUT_IDENTITY)
 		/*  identity output function: don't call the output function  */
 		unit_ptr->Out.output = unit_ptr->act;
+	    else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    else
 		/* no identity output function: calculate unit's output also  */
 		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -116,6 +122,10 @@ krui_err  UPDATE_serialPropagate(float *parameterArray, int NoOfParams)
 	    if (unit_ptr->out_func == OUT_IDENTITY)
 		/*  identity output function: don't call the output function */
 		unit_ptr->Out.output = unit_ptr->act;
+	    else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    else
 		/*  no identity output function: calculate unit's output also */
 		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -157,6 +167,10 @@ krui_err  UPDATE_randomOrderPropagate(float *parameterArray, int NoOfParams)
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /*  identity output function: don't call the output function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -202,6 +216,10 @@ krui_err  UPDATE_randomPermutPropagate(float *parameterArray, int NoOfParams)
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /*  identity output function: don't call the output function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -247,6 +265,10 @@ krui_err  UPDATE_topologicalPropagate(float *parameterArray, int NoOfParams)
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /*  identity output function: don't call the output function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -259,6 +281,10 @@ krui_err  UPDATE_topologicalPropagate(float *parameterArray, int NoOfParams)
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /*  identity output function: don't call the output function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -271,6 +297,10 @@ krui_err  UPDATE_topologicalPropagate(float *parameterArray, int NoOfParams)
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /*  identity output function: don't call the output function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -314,6 +344,10 @@ krui_err  UPDATE_KohonenPropagate(float *parameterArray, int NoOfParams)
     while ((unit_ptr = *topo_ptr++) != NULL){
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -325,6 +359,10 @@ krui_err  UPDATE_KohonenPropagate(float *parameterArray, int NoOfParams)
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -505,6 +543,10 @@ krui_err  UPDATE_TimeDelayPropagate(float parameterArray[], int NoOfParams )
 	    /*  identity output function: there is no need to call the 
 		output function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -617,6 +659,10 @@ krui_err  UPDATE_ART1_syncPropagate(float *parameterArray, int NoOfParams)
     for (unit_ptr = *topo_ptr; *topo_ptr != NULL; unit_ptr = *topo_ptr++) {
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->Out.output = unit_ptr->act;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
 	}
@@ -898,6 +944,10 @@ krui_err  UPDATE_ART2_syncPropagate(float *parameterArray, int NoOfParams)
     while (unit_ptr != NULL) {
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->Out.output = unit_ptr->act;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
 	}
@@ -1166,6 +1216,10 @@ krui_err  UPDATE_ARTMAP_syncPropagate(float *parameterArray, int NoOfParams)
     for (unit_ptr = *topo_ptr; *topo_ptr != NULL; unit_ptr = *++topo_ptr) {
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->Out.output = unit_ptr->act;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
 	} 
@@ -1175,6 +1229,10 @@ krui_err  UPDATE_ARTMAP_syncPropagate(float *parameterArray, int NoOfParams)
     for (unit_ptr = *topo_ptr; *topo_ptr != NULL; unit_ptr = *++topo_ptr) {
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->Out.output = unit_ptr->act;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
 	}
@@ -1361,6 +1419,10 @@ krui_err UPDATE_CC_Propagate(float parameterArray[],  int NoOfParams)
     FOR_ALL_INPUT_UNITS(inputUnitPtr,dummy){
 	if(inputUnitPtr->out_func == OUT_IDENTITY) {
 	    inputUnitPtr->Out.output = inputUnitPtr->act;
+	} else if(inputUnitPtr->out_func == OUT_Custom_Python) {
+		inputUnitPtr->Out.output = 
+			kr_PythonOutFunction(inputUnitPtr->python_out_func,
+				inputUnitPtr->act);
 	}else{
 	    inputUnitPtr->Out.output = 
 		(*inputUnitPtr->out_func) (inputUnitPtr->act);
@@ -1371,6 +1433,10 @@ krui_err UPDATE_CC_Propagate(float parameterArray[],  int NoOfParams)
 	hiddenUnitPtr->act = (*hiddenUnitPtr->act_func) (hiddenUnitPtr);
 	if(hiddenUnitPtr->out_func == OUT_IDENTITY) {
 	    hiddenUnitPtr->Out.output = hiddenUnitPtr->act;
+	} else if(hiddenUnitPtr->out_func == OUT_Custom_Python) {
+		hiddenUnitPtr->Out.output =
+		    kr_PythonOutFunction(hiddenUnitPtr->python_out_func,
+		    			hiddenUnitPtr->act);
 	}else{
 	    hiddenUnitPtr->Out.output = 
 		(*hiddenUnitPtr->out_func) (hiddenUnitPtr->act);
@@ -1381,6 +1447,10 @@ krui_err UPDATE_CC_Propagate(float parameterArray[],  int NoOfParams)
 	outputUnitPtr->act = (*outputUnitPtr->act_func) (outputUnitPtr);
 	if(outputUnitPtr->out_func == OUT_IDENTITY) {
 	    outputUnitPtr->Out.output = outputUnitPtr->act;
+	}else if(outputUnitPtr->out_func == OUT_Custom_Python){
+		outputUnitPtr->Out.output =
+			kr_PythonOutFunction(outputUnitPtr->python_out_func,
+				outputUnitPtr->act);
 	}else{
 	    outputUnitPtr->Out.output = 
 		(*outputUnitPtr->out_func) (outputUnitPtr->act);
@@ -1575,6 +1645,10 @@ krui_err  UPDATE_BPTT(float *parameterArray, int NoOfParams)
 	}else{  
 	    if (unit_ptr->out_func == OUT_IDENTITY) {
 		unit_ptr->Out.output = unit_ptr->act;
+	    }else if(unit_ptr->out_func == OUT_Custom_Python){
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    }else{
 		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
 	    }
@@ -1638,6 +1712,10 @@ krui_err  UPDATE_BAM(float *parameterArray, int NoOfParams)
 	    unit_ptr->value_a = unit_ptr->Out.output;
 	    if (unit_ptr->out_func == OUT_IDENTITY) {
 		unit_ptr->Out.output = unit_ptr->act;
+	    }else if(unit_ptr->out_func == OUT_Custom_Python){
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    }else{
 		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
 	    }
@@ -1703,6 +1781,10 @@ krui_err  UPDATE_JE_Propagate (float *parameterArray, int NoOfParams)
     while ((unit_ptr = *++topo_ptr) != NULL){
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    unit_ptr->Out.output = unit_ptr->act ;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act) ;
 	else
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
     }
@@ -1716,6 +1798,10 @@ krui_err  UPDATE_JE_Propagate (float *parameterArray, int NoOfParams)
 
 	    if (unit_ptr->out_func == OUT_IDENTITY)
 		unit_ptr->Out.output = unit_ptr->act ;
+	    else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act) ;
 	    else
 		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
 	}
@@ -1733,6 +1819,10 @@ krui_err  UPDATE_JE_Propagate (float *parameterArray, int NoOfParams)
     while ((unit_ptr = *++topo_ptr) != NULL){
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    unit_ptr->Out.output = unit_ptr->act ;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act) ;
 	else
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
     }
@@ -1795,6 +1885,10 @@ krui_err  UPDATE_JE_Special (float *parameterArray, int NoOfParams)
     while ((unit_ptr = *++topo_ptr) != NULL){
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    unit_ptr->Out.output = unit_ptr->act ;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act) ;
 	else
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
     }
@@ -1808,6 +1902,10 @@ krui_err  UPDATE_JE_Special (float *parameterArray, int NoOfParams)
 
 	    if (unit_ptr->out_func == OUT_IDENTITY)
 		unit_ptr->Out.output = unit_ptr->act ;
+	    else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act) ;
 	    else
 		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
 	}
@@ -1825,6 +1923,10 @@ krui_err  UPDATE_JE_Special (float *parameterArray, int NoOfParams)
     while ((unit_ptr = *++topo_ptr) != NULL){
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    unit_ptr->Out.output = unit_ptr->act ;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act) ;
 	else
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
     }
@@ -1851,8 +1953,12 @@ krui_err  UPDATE_syncPropagateHop(float *parameterArray, int NoOfParams)
     /* the activations of the input units, and they would be overwritten */
     FOR_ALL_UNITS( unit_ptr ) {
 	if UNIT_IN_USE(unit_ptr) {
-	    if (*unit_ptr->out_func == OUT_IDENTITY) {
+	    if (unit_ptr->out_func == OUT_IDENTITY) {
 		unit_ptr->Out.output = unit_ptr->act;
+	    }else if(unit_ptr->out_func == OUT_Custom_Python){ /* the default way */
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    }else{ /* the default way */
 		unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act);
 	    }
@@ -1870,8 +1976,12 @@ krui_err  UPDATE_syncPropagateHop(float *parameterArray, int NoOfParams)
     /* output update of non input units (for resultfile) */
     FOR_ALL_UNITS( unit_ptr ) {
 	if (UNIT_IN_USE(unit_ptr) && !IS_INPUT_UNIT(unit_ptr)) {
-	    if (*unit_ptr->out_func == OUT_IDENTITY) { 
+	    if (unit_ptr->out_func == OUT_IDENTITY) { 
 		unit_ptr->Out.output = unit_ptr->act;
+	    }else if(unit_ptr->out_func == OUT_Custom_Python){ /* the default way */
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    }else{ /* the default way */
 		unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act);
 	    }
@@ -1891,6 +2001,10 @@ krui_err  UPDATE_syncPropagateHop(float *parameterArray, int NoOfParams)
 	if (UNIT_IN_USE(unit_ptr) && IS_INPUT_UNIT(unit_ptr)) {
 	    if (*unit_ptr->out_func == OUT_IDENTITY) { 
 		unit_ptr->Out.output = unit_ptr->act;
+	    }else if(unit_ptr->out_func == OUT_Custom_Python){ /* the default way */
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    }else{ /* the default way */
 		unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act);
 	    }
@@ -1941,6 +2055,10 @@ krui_err  UPDATE_FixAct_Hop(float *parameterArray, int NoOfParams)
 	if UNIT_IN_USE(unit_ptr) {
 	    if (*unit_ptr->out_func == OUT_IDENTITY) { 
 		unit_ptr->Out.output = unit_ptr->act;
+	    }else if(unit_ptr->out_func == OUT_Custom_Python){/* the default way */
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    }else{/* the default way */
 		unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act);
 	    }
@@ -1997,6 +2115,10 @@ krui_err  UPDATE_FixAct_Hop(float *parameterArray, int NoOfParams)
 	if UNIT_IN_USE(unit_ptr) {
 	    if (*unit_ptr->out_func == OUT_IDENTITY) { 
 		unit_ptr->Out.output = unit_ptr->act;
+	    }else if(unit_ptr->out_func == OUT_Custom_Python){/* the default way */
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    }else{/* the default way */
 		unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act);
 	    }
@@ -2040,6 +2162,10 @@ krui_err UPDATE_RM_Propagate (float *parameterArray, int NoOfParams)
 	      if (unit_ptr->out_func == OUT_IDENTITY)
 		  /*  identity output function: don't call output function  */
 		  unit_ptr->Out.output = unit_ptr->act;
+	      else if(unit_ptr->out_func == OUT_Custom_Python)
+	      	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	      else
 		  /* calculate unit's output also  */
 		  unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -2203,6 +2329,10 @@ static krui_err ENZO_PROPAGATE_ff(void)
     if (unit_ptr->out_func == OUT_IDENTITY)
       /*  identity output function: no need to call the output function  */
       unit_ptr->Out.output = unit_ptr->act;
+    else if(unit_ptr->out_func == OUT_Custom_Python)
+    	unit_ptr->Out.output =
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
     else
       /*  no identity output function: calculate unit's output also  */
       unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -2221,6 +2351,10 @@ static krui_err ENZO_PROPAGATE_ff(void)
     if (unit_ptr->out_func == OUT_IDENTITY)
       /*  identity output function: no need to call the output function  */
       unit_ptr->Out.output = unit_ptr->act;
+    else if(unit_ptr->out_func == OUT_Custom_Python)
+    	unit_ptr->Out.output =
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
     else
       /*  no identity output function: calculate unit's output also  */
       unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -2239,6 +2373,10 @@ static krui_err ENZO_PROPAGATE_ff(void)
     if (unit_ptr->out_func == OUT_IDENTITY)
       /*  identity output function: no need to call the output function  */
       unit_ptr->Out.output = unit_ptr->act;
+    else if(unit_ptr->out_func == OUT_Custom_Python)
+    	unit_ptr->Out.output =
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
     else
       /*  no identity output function: calculate unit's output also  */
       unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);

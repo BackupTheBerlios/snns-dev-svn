@@ -87,6 +87,9 @@ krui_err krart_reset_activations (void)
 /* synchronous propagation (1 cycle) i.e. each unit puts its output onto
    its outgoing links and calculates its new activation.
 */
+
+extern FlintType OUT_Custom_Python(FlintType act);
+
 void  krart_prop_synch (void)
 {
   struct Unit    *unit_ptr;
@@ -109,6 +112,10 @@ void  krart_prop_synch (void)
 
      if (unit_ptr->out_func == OUT_IDENTITY) {
         unit_ptr->Out.output = unit_ptr->act;
+     } else if(unit_ptr->out_func == OUT_Custom_Python) {
+     	unit_ptr->Out.output =
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
      } else {
         unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
      } /*if*/

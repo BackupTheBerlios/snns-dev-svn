@@ -80,6 +80,7 @@ struct FuncTable  kernel_func_table[]	=
 {"Out_Clip_11",      OUT_FUNC, 0, 0, (FunctionPtr) OUT_Clip_11},
 {"Out_ART2_Noise_PLin", OUT_FUNC, 0, 0, (FunctionPtr) OUT_ART2_Noise_PLin},
 {"Out_ART2_Noise_ContDiff", OUT_FUNC, 0, 0, (FunctionPtr) OUT_ART2_Noise_ContDiff},
+{"Out_Custom_Python",OUT_FUNC, 0, 0, (FunctionPtr) OUT_Custom_Python},
 
 /*  Activation functions  */
 /*  This is the DEFAULT FUNCTION  */
@@ -131,6 +132,7 @@ struct FuncTable  kernel_func_table[]	=
 {"Act_Component",    ACT_FUNC, 0, 0, (FunctionPtr) ACT_Component},
 {"Act_RM",	     ACT_FUNC, 0, 0, (FunctionPtr) ACT_RM}, 
 {"Act_TACOMA",       ACT_FUNC, 0, 0, (FunctionPtr) ACT_TACOMA},
+{"Act_Custom_Python",       ACT_FUNC, 0, 0, (FunctionPtr) ACT_Custom_Python},
 
 
 /*  Derivation functions of the activation functions
@@ -184,6 +186,7 @@ struct FuncTable  kernel_func_table[]	=
 {"Act_Component",    ACT_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_DERIV_Dummy},
 {"Act_RM",           ACT_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_DERIV_Dummy}, 
 {"Act_TACOMA",       ACT_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_DERIV_TACOMA},
+{"Act_Custom_Python",       ACT_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_DERIV_Custom_Python},
 
 /*  Second derivation functions of the activation functions
     NOTE: The second derivative function of the activation function
@@ -237,6 +240,7 @@ struct FuncTable  kernel_func_table[]	=
 {"Act_CC_Thresh",           ACT_2_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_2_DERIV_Dummy},
 {"Act_Sinus",               ACT_2_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_2_DERIV_Dummy},
 {"Act_Exponential",         ACT_2_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_2_DERIV_Dummy},
+{"Act_Custom_Python",         ACT_2_DERIV_FUNC, 0, 0, (FunctionPtr) ACT_2_DERIV_Dummy},
 
 
 /*  Site functions  */

@@ -98,7 +98,12 @@ FlintType  OUT_Threshold05(register FlintType activation)
   return( (FlintType) 1.0 );
 }
 
-
+FlintType OUT_Custom_Python(register FlintType activation)
+{
+  fputs("Dummy for custom python output functions - should never be called\n",stderr);
+  return 0;
+}
+  
 /*#################################################
 
 GROUP: Unit Activation Functions
@@ -1071,6 +1076,12 @@ FlintType   ACT_Euclid( UNIT_PTR unit_ptr )
   return(sqrt(dist));
 }
 
+FlintType ACT_Custom_Python(struct Unit *unit_ptr)
+{
+  fputs("Dummy for custom python activation functions - should never be called\n",stderr);
+  return 0;
+}
+
 
 
 /*######################################################################
@@ -1081,6 +1092,18 @@ Second Derivation Funtions are not available for TD and RBF activation
 functions.
 
 ######################################################################*/
+
+FlintType ACT_DERIV_Custom_Python(struct Unit *unit_ptr)
+{
+  fputs("Dummy for custom python activation functions - should never be called\n",stderr);
+  return 0;
+}
+
+FlintType ACT_2_DERIV_Custom_Python(struct Unit *unit_ptr)
+{
+  fputs("Dummy for custom python activation functions - should never be called\n",stderr);
+  return 0;
+}
 
 /*  Sigmoid Derivation Function
 */

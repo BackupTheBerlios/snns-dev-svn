@@ -48,6 +48,10 @@
 #include "kr_mac.h"	
 #include "kr_inversion.ph"
 
+extern FlintType ACT_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_DERIV_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_2_DERIV_Custom_Python(struct Unit * unit_ptr);
+
 
 
 /*****************************************************************************
@@ -93,6 +97,8 @@ int kr_initInversion(void)
   NOTES    :
   UPDATE   : 29.01.92
 ******************************************************************************/
+extern FlintType OUT_Custom_Python(FlintType act);
+
 void  kr_inv_forwardPass(struct UnitList *inputs)
 {
 
@@ -117,6 +123,10 @@ void  kr_inv_forwardPass(struct UnitList *inputs)
 
      if(unit_ptr->out_func == OUT_IDENTITY)
         unit_ptr->Out.output = unit_ptr->act = IUnit->act;
+     else if(unit_ptr->out_func == OUT_Custom_Python)  /* no identity output function: calculate unit's output also  */
+     	unit_ptr->Out.output =
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = IUnit->act);
      else  /* no identity output function: calculate unit's output also  */
        unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act = IUnit->act);
      IUnit = IUnit->next;
@@ -132,10 +142,17 @@ void  kr_inv_forwardPass(struct UnitList *inputs)
 
      /*  calculate the activation value of the unit: 
 	 call the activation function if needed  */
-     unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+     unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
      if(unit_ptr->out_func == OUT_IDENTITY)
        unit_ptr->Out.output = unit_ptr->act;
+     else if(unit_ptr->out_func == OUT_Custom_Python)
+     	unit_ptr->Out.output =
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
      else
        /*  no identity output function: calculate unit's output also  */
        unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -151,10 +168,17 @@ void  kr_inv_forwardPass(struct UnitList *inputs)
 
      /*  calculate the activation value of the unit: 
 	 call the activation function if needed  */
-     unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+     unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
      if(unit_ptr->out_func == OUT_IDENTITY)
        unit_ptr->Out.output = unit_ptr->act;
+     else if(unit_ptr->out_func == OUT_Custom_Python)      /*  no identity output function: calculate unit's output also  */
+     	unit_ptr->Out.output =
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
      else      /*  no identity output function: calculate unit's output also  */
        unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
    }
@@ -213,7 +237,10 @@ double kr_inv_backwardPass(float learn, float delta_max, int *err_units,
      sum_error += devit * devit;  
 
      /*	calc. error for output units	 */
-     error = devit * (unit_ptr->act_deriv_func) ( unit_ptr );
+     error = devit * ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ;
      /*     error = devit;*/
 
      /* Calculate sum of errors of predecessor units  */
@@ -232,7 +259,10 @@ double kr_inv_backwardPass(float learn, float delta_max, int *err_units,
    while((unit_ptr = *--topo_ptr) != NULL){
 
      /*	calc. the error of the (hidden) unit  */
-     error = (unit_ptr->act_deriv_func) ( unit_ptr ) * unit_ptr->Aux.flint_no;
+     error = ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr))  * unit_ptr->Aux.flint_no;
      error = unit_ptr->Aux.flint_no;
 
      /* Calculate sum of errors of predecessor units  */
@@ -254,7 +284,10 @@ double kr_inv_backwardPass(float learn, float delta_max, int *err_units,
    while((unit_ptr = *--topo_ptr) != NULL){
 
      /*	calc. the error of the (input) unit  */
-     error = (unit_ptr->act_deriv_func) ( unit_ptr ) * unit_ptr->Aux.flint_no;
+     error = ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr))  * unit_ptr->Aux.flint_no;
      error = unit_ptr->Aux.flint_no;
 
      /* Calculate the new activation for the input units */

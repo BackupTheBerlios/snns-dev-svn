@@ -116,7 +116,9 @@ void krm_releaseFtypeEntry( struct FtypeUnitStruct  *Ftype_entry );
 /*  create and define a Ftype entry
 */
 struct FtypeUnitStruct *krm_FtypeCreateEntry( char *Ftype_symbol, OutFuncPtr out_func, 
-                                              ActFuncPtr act_func, ActDerivFuncPtr act_deriv_func, ActDerivFuncPtr act_2_deriv_func );
+                                              ActFuncPtr act_func, ActDerivFuncPtr act_deriv_func, ActDerivFuncPtr act_2_deriv_func,
+	PyObject *python_out_func, PyObject *python_act_func,
+	PyObject *python_act_deriv_func, PyObject *python_act_2_deriv_func);
 
 /*  add a site to a previosly defined Ftype entry */
 struct Site *krm_FtypeAddSite(struct FtypeUnitStruct  *Ftype_entry, 

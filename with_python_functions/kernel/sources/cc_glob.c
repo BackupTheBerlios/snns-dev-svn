@@ -47,6 +47,10 @@
 
 #include "cc_glob.ph"   
 
+extern FlintType ACT_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_DERIV_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_2_DERIV_Custom_Python(struct Unit * unit_ptr);
+
 
 /*****************************************************************************
   FUNCTION : cc_printHeadline
@@ -118,7 +122,10 @@ float cc_getErr (int StartPattern, int EndPattern)
 	    if (abs(devit) > 0.2) Correct=FALSE;
 	    sse += devit*devit;
 	    error = devit * 
-		((*OutputUnitPtr->act_deriv_func)(OutputUnitPtr) + cc_fse);
+		(((OutputUnitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(OutputUnitPtr->python_act_deriv_func,
+						OutputUnitPtr) :
+			(OutputUnitPtr->act_deriv_func) (OutputUnitPtr))  + cc_fse);
 	    SumSqError += error*error;
 	}
     }

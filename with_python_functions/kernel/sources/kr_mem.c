@@ -1540,7 +1540,7 @@ void    krm_releaseFtypeEntry(struct FtypeUnitStruct *Ftype_entry)
   RETURNS  : the ftype
   UPDATE   : 
 ******************************************************************************/
-struct FtypeUnitStruct  *krm_FtypeCreateEntry(char *Ftype_symbol, OutFuncPtr out_func, ActFuncPtr act_func, ActDerivFuncPtr act_deriv_func, ActDerivFuncPtr act_2_deriv_func)
+struct FtypeUnitStruct  *krm_FtypeCreateEntry(char *Ftype_symbol, OutFuncPtr out_func, ActFuncPtr act_func, ActDerivFuncPtr act_deriv_func, ActDerivFuncPtr act_2_deriv_func, PyObject *python_out_func,PyObject *python_act_func,PyObject *python_act_deriv_func,   PyObject *python_act_2_deriv_func)
 {
   struct  FtypeUnitStruct   *Ftype_entry;
   struct  NameTable         *n_ptr;
@@ -1559,6 +1559,10 @@ struct FtypeUnitStruct  *krm_FtypeCreateEntry(char *Ftype_symbol, OutFuncPtr out
   Ftype_entry->act_func = act_func;
   Ftype_entry->act_deriv_func = act_deriv_func;
   Ftype_entry->act_2_deriv_func = act_2_deriv_func;
+  Ftype_entry->python_out_func = python_out_func;
+  Ftype_entry->python_act_func = python_act_func;
+  Ftype_entry->python_act_deriv_func = python_act_deriv_func;
+  Ftype_entry->python_act_2_deriv_func = python_act_2_deriv_func;
   Ftype_entry->sites = NULL;
 
   return( Ftype_entry );

@@ -93,6 +93,8 @@ static krui_err initializeTDBackprop(void)
   RETURNS  :
   UPDATE   : 19.02.1993
 ******************************************************************************/
+extern FlintType OUT_Custom_Python(FlintType act);
+
 void  propagateTDNetForward(int pattern_no, int sub_pat_no)
 { 
   register struct Unit    *unit_ptr;
@@ -119,6 +121,10 @@ void  propagateTDNetForward(int pattern_no, int sub_pat_no)
 	  if (unit_ptr->out_func == OUT_IDENTITY){
 	      /*  identity output function: don't call the output function  */
 	      unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	  }else if(unit_ptr->out_func == OUT_Custom_Python){
+	  	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
 	  }else{
 	      /*  no identity output function: calculate unit's output also  */
 	      unit_ptr->Out.output = 
@@ -160,6 +166,10 @@ void  propagateTDNetForward(int pattern_no, int sub_pat_no)
 	  if (unit_ptr->out_func == OUT_IDENTITY){
 	      /*  identity output function: don't call the output function  */
 	      unit_ptr->Out.output = unit_ptr->act;
+	  }else if(unit_ptr->out_func == OUT_Custom_Python){
+	  	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	  }else{
 	      /*  no identity output function: calculate unit's output also  */
 	      unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);

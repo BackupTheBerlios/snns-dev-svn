@@ -50,6 +50,7 @@ int  krui_searchUnitName(char *unit_name);
 int  krui_searchNextUnitName(void);
 char  *krui_getUnitOutFuncName(int UnitNo);
 krui_err  krui_setUnitOutFunc(int unit_no, char *unitOutFuncName);
+krui_err  krui_setUnitOutPyFunc(int unit_no, PyObject *outfunc);
 char  *krui_getUnitActFuncName(int UnitNo);
 krui_err  krui_setUnitActFunc(int unit_no, char *unitActFuncName);
 char  *krui_getUnitFTypeName(int UnitNo);

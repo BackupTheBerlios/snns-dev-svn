@@ -68,9 +68,10 @@
 
 #include "learn_f.ph"
 
-
-
-
+extern FlintType OUT_Custom_Python(register FlintType activation);
+extern FlintType ACT_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_DERIV_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_2_DERIV_Custom_Python(struct Unit * unit_ptr);
 
 
 /*****************************************************************************
@@ -93,6 +94,7 @@
 
   UPDATE   : 05.11.1993
 ******************************************************************************/
+
 void propagateNetForward(int pattern_no, int sub_pat_no)
 {
     register struct Unit *unit_ptr;
@@ -119,7 +121,11 @@ void propagateNetForward(int pattern_no, int sub_pat_no)
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act = *in_pat++;
-	else
+	else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->Out.output
+		 = kr_PythonOutFunction(unit_ptr->python_out_func,
+		                          unit_ptr->act = *in_pat++);
+	} else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output 
 		= (*unit_ptr->out_func) (unit_ptr->act = *in_pat++);
@@ -134,13 +140,20 @@ void propagateNetForward(int pattern_no, int sub_pat_no)
 
 	/* calculate the activation value of the unit: call the activation
 	   function if needed  */
-	unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+	unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act;
-	else
+	else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->Out.output
+		 = kr_PythonOutFunction(unit_ptr->python_out_func,
+		                          unit_ptr->act);
+	} else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
     }
@@ -154,13 +167,21 @@ void propagateNetForward(int pattern_no, int sub_pat_no)
 
 	/* calculate the activation value of the unit: call the activation
 	   function if needed  */
-	unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+	if(unit_ptr->act_func == ACT_Custom_Python) {
+		unit_ptr->act = 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr);
+	} else unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act;
-	else
+	else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->Out.output 
+		 = kr_PythonOutFunction(unit_ptr->python_out_func,
+		                          unit_ptr->act);
+	} else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
     }
@@ -213,7 +234,10 @@ static float propagateNetBackward2(int pattern_no, int sub_pat_no,
 	sum_error += devit * devit; /* sum up the error of the network  */
 
 	/* calc. error for output units	 */
-	error = devit * (unit_ptr->act_deriv_func) (unit_ptr);
+	error = devit * ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ?
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr));
 	/* calc. the error for adjusting weights and bias of the pred.
 	   units  */
 	if (IS_SPECIAL_UNIT(unit_ptr))
@@ -243,7 +267,10 @@ static float propagateNetBackward2(int pattern_no, int sub_pat_no,
     /* calculate hidden units only  */
     while ((unit_ptr = *--topo_ptr) != NULL) {
 	/* calc. the error of the (hidden) unit  */
-	error = (unit_ptr->act_deriv_func) (unit_ptr) * 
+	error = ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) * 
 	    unit_ptr->Aux.flint_no;
 	/* calc. the error for adjusting weights and bias of the pred.
 	   units  */
@@ -547,7 +574,10 @@ float propagateNetBackwardBatch(int pattern_no, int sub_pat_no, float delta_max)
 	sum_error += devit * devit; /* sum up the error of the network  */
 
 	/* calc. error for output units	 */
-	error = devit * (unit_ptr->act_deriv_func) (unit_ptr);
+	error = devit * ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)); 
 	/* calc. the error for adjusting weights and bias of the pred.
 	   units  */
 	/* adjust bias value  */
@@ -576,7 +606,10 @@ float propagateNetBackwardBatch(int pattern_no, int sub_pat_no, float delta_max)
     /* change is performed  by updateWeights */
     while ((unit_ptr = *--topo_ptr) != NULL) {
 	/* calc. the error of the (hidden) unit  */
-	error = (unit_ptr->act_deriv_func) (unit_ptr) * 
+	error = ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) * 
 	    unit_ptr->Aux.flint_no;
 	/* calc. the error for adjusting weights and bias of the pred.
 	   units  */
@@ -684,7 +717,10 @@ float propagateClassNetBackwardBatch(int pattern_no, int sub_pat_no, float delta
 	sum_error += devit * devit; /* sum up the error of the network  */
 
 	/* calc. error for output units	 */
-	error = devit * (unit_ptr->act_deriv_func) (unit_ptr);
+	error = devit * ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ;
 	/* calc. the error for adjusting weights and bias of the pred.
 	   units  */
 	if (adjust_this)
@@ -725,7 +761,11 @@ float propagateClassNetBackwardBatch(int pattern_no, int sub_pat_no, float delta
 	       unit_ptr->unit_name ? unit_ptr->unit_name : "");
 #endif
 	/* calc. the error of the (hidden) unit  */
-	error = (unit_ptr->act_deriv_func) (unit_ptr) * unit_ptr->Aux.flint_no;
+	error = ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr))  
+		* unit_ptr->Aux.flint_no;
 	/* calc. the error for adjusting weights and bias of the pred. units */
 	if (adjust_this)
 	{
@@ -1136,7 +1176,10 @@ static float Backprop_momentum_FSE(int pattern_no, int sub_pat_no,
 
 	sum_error += devit * devit;	/* sum up the error of the network  */
 	/* calc. error for output units	 */
-	error = devit * ((unit_ptr->act_deriv_func) (unit_ptr) + FSE_term);
+	error = devit * (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr))  + FSE_term);
 
 	/* calc. the error for adjusting weights and bias of the predecessor
 	   units  */
@@ -1176,7 +1219,10 @@ static float Backprop_momentum_FSE(int pattern_no, int sub_pat_no,
     while ((unit_ptr = *--topo_ptr) != NULL) {
 	/* calc. the error of the (hidden) unit  */
 	error = unit_ptr->Aux.flint_no * 
-	        ((unit_ptr->act_deriv_func) (unit_ptr) + FSE_term);
+	        (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr))  + FSE_term);
 
 	/* calc. the error for adjusting weights and bias of the pred. units */
 	mu_help = mu;
@@ -1464,7 +1510,10 @@ static float Backprop_weightdecay (int pattern_no, int sub_pat_no,
 	sum_error += devit * devit;
 
 	/* calculate error for output units	 */
-	error = devit * (unitPtr->act_deriv_func) (unitPtr);
+	error = devit * ((unitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unitPtr->python_act_deriv_func,
+						unitPtr) :
+			(unitPtr->act_deriv_func) (unitPtr)) ;
 
 	/* calculate the error for adjusting weights and bias of the */
 	/* predecessor units  */
@@ -1533,7 +1582,10 @@ static float Backprop_weightdecay (int pattern_no, int sub_pat_no,
 	unitNo = unitPtr - unit_array;
 
 	/* calculate the error of the (hidden) unit  */
-	error = (unitPtr->act_deriv_func) (unitPtr) * 
+	error = ((unitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unitPtr->python_act_deriv_func,
+						unitPtr) :
+			(unitPtr->act_deriv_func) (unitPtr))  * 
 	    unitPtr->Aux.flint_no;
 
 	/* calculate the error for adjusting weights and bias of the */
@@ -2210,7 +2262,10 @@ static float propagateNetBackwardQuickprop(int pattern_no, int sub_pat_no,
 	sum_error += devit * devit; /* sum up the error of the network  */
 
 	/* calc. error for output units	 */
-	error = devit * ((unit_ptr->act_deriv_func) (unit_ptr) +
+	error = devit * (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr))  +
 			 SIGMOID_PRIME_OFFSET);
 
 	unit_ptr->value_c += -error; /* calculate the bias slopes  */
@@ -2234,7 +2289,10 @@ static float propagateNetBackwardQuickprop(int pattern_no, int sub_pat_no,
 
     /* calculate hidden units only  */
     while ((unit_ptr = *--topo_ptr) != NULL) {
-	error = ((unit_ptr->act_deriv_func) (unit_ptr) +
+	error = (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr))  +
 		 SIGMOID_PRIME_OFFSET) * unit_ptr->Aux.flint_no;
 
 	unit_ptr->value_c += -error; /* calculate the bias slopes  */
@@ -2686,6 +2744,10 @@ static float propagateNet_CPN(int pattern_no, int sub_pat_no, float alpha,
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
 	else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = 
@@ -2803,7 +2865,11 @@ static float propagateNet_CPN(int pattern_no, int sub_pat_no, float alpha,
 
 	/* the activation function is the identity function (weighted sum)
 	   and identity output function */
-	unit_ptr->Out.output = unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+	unit_ptr->Out.output = unit_ptr->act = 
+		((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
 	devit = *out_pat++ - unit_ptr->Out.output;    /* calculate devitation */
 	sum_error += devit * devit;
@@ -2955,6 +3021,10 @@ static void propagateNetForward_perc(int pattern_no, int sub_pat_no)
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
 	else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = 
@@ -2972,12 +3042,19 @@ static void propagateNetForward_perc(int pattern_no, int sub_pat_no)
 
 	/* calculate the activation value of the unit: call the activation
 	   function if needed  */
-	unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+	unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -2994,12 +3071,19 @@ static void propagateNetForward_perc(int pattern_no, int sub_pat_no)
 
 	/* calculate the activation value of the unit: call the activation
 	   function if needed  */
-	unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+	unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -3050,7 +3134,11 @@ static float propagateNetBackward_perc(int pattern_no, int sub_pat_no,
 
 	if (fabs(devit) > delta_max) {	/* calc. error for output units     */
 	    *perc_error += fabs(devit);
-	    error = -2.0 * devit * (unit_ptr->act_deriv_func) (unit_ptr);
+	    error = -2.0 * devit * 
+	    	((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ;
 	    act_err = devit * eta;
 	    sum_error += devit * devit;	/* sum up the error of the network  */
 	} else {		/* set error of output units to zero	 */
@@ -3097,7 +3185,10 @@ static float propagateNetBackward_perc(int pattern_no, int sub_pat_no,
 
     /* calculate hidden units only  */
     while ((unit_ptr = *--topo_ptr) != NULL) {
-	der = (unit_ptr->act_deriv_func) (unit_ptr);
+	der = ((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ;
 	error = der * unit_ptr->Aux.flint_no;
 	act_err = (unit_ptr->value_a / unit_ptr->value_b) * der;
 
@@ -3342,9 +3433,14 @@ krui_err  RbfLearnForward(int pattern_no, int sub_pat_no)
 	/* output:							 */
 
 	unit_ptr->act = *current_in_pattern++;
-	unit_ptr->Out.output = unit_ptr->out_func == OUT_IDENTITY
-	    ? unit_ptr->act
-	    : (*unit_ptr->out_func) (unit_ptr->act);
+	if(unit_ptr->out_func == OUT_IDENTITY)
+		unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
+	else	
+	unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
     }
 
     /* activate hidden units, by calling the activation function	 */
@@ -3355,7 +3451,10 @@ krui_err  RbfLearnForward(int pattern_no, int sub_pat_no)
 
     while ((unit_ptr = *(++topo_ptr)) != NULL) {
 	unit_ptr->act = unit_ptr->Out.output =
-	    (*unit_ptr->act_func) (unit_ptr);
+	    ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
 	unit_ptr->value_c = 0.0;
     }
@@ -3369,7 +3468,10 @@ krui_err  RbfLearnForward(int pattern_no, int sub_pat_no)
 
     while ((unit_ptr = *(++topo_ptr)) != NULL) {
 	unit_ptr->act = unit_ptr->Out.output =
-	    (*unit_ptr->act_func) (unit_ptr);
+	    ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 	unit_ptr->value_a = *current_out_pattern++ - unit_ptr->act;
     }
 
@@ -3423,7 +3525,10 @@ float RbfLearnAdjustDelta(float para_center, float para_bias,
 
 	/* error, weighted by the deviation of the activation:	 */
 	w2_error = w_error = (curr_unit->value_a) *
-	    (*curr_unit->act_deriv_func) (curr_unit);
+	    ((curr_unit->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(curr_unit->python_act_deriv_func,
+						curr_unit) :
+			(curr_unit->act_deriv_func) (curr_unit)) ;
 
 	/* sum up the learning error:				 */
 	learn_error += (curr_unit->value_a) * (curr_unit->value_a);
@@ -3468,7 +3573,10 @@ float RbfLearnAdjustDelta(float para_center, float para_bias,
 	    /* RBF function)						 */
 	    curr_unit->Aux.int_no = 2;	/* derivated to norm ^2 */
 	    center_delta = curr_unit->value_c *
-		(*curr_unit->act_deriv_func) (curr_unit);
+		((curr_unit->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(curr_unit->python_act_deriv_func,
+						curr_unit) :
+			(curr_unit->act_deriv_func) (curr_unit)) ;
 
 	    if (learn_mask & RBF_LEARN_CENTER) {
 #ifdef RBF_INCR_LEARNING
@@ -3492,10 +3600,16 @@ float RbfLearnAdjustDelta(float para_center, float para_bias,
 #ifdef RBF_INCR_LEARNING
 	    if (!IS_SPECIAL_UNIT(curr_unit))
 		curr_unit->bias += para_bias * curr_unit->value_c *
-		    (*curr_unit->act_deriv_func) (curr_unit);
+		    ((curr_unit->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ;
 #else
 	    curr_unit->value_b += curr_unit->value_c *
-		(*curr_unit->act_deriv_func) (curr_unit);
+		((curr_unit->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(curr_unit->python_act_deriv_func,
+						curr_unit) :
+			(curr_unit->act_deriv_func) (curr_unit)) ;
 #endif
 	}
     }
@@ -4552,6 +4666,10 @@ static void propagateNetForwardMAP(int pattern_no, int sub_pat_no,
             /* identity output function: there is no need to call the output
                function  */
             unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
         else
             /* no identity output function: calculate unit's output also  */
             unit_ptr->Out.output 
@@ -4567,12 +4685,19 @@ static void propagateNetForwardMAP(int pattern_no, int sub_pat_no,
 
         /* calculate the activation value of the unit: call the activation
            function if needed  */
-        unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+        unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
         if (unit_ptr->out_func == OUT_IDENTITY)
             /* identity output function: there is no need to call the output
                function  */
             unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
         else
             /* no identity output function: calculate unit's output also  */
             unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -4587,12 +4712,19 @@ static void propagateNetForwardMAP(int pattern_no, int sub_pat_no,
 
         /* calculate the activation value of the unit: call the activation
            function if needed  */
-        unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+        unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
         sum_act += unit_ptr->act;
         if (unit_ptr->out_func == OUT_IDENTITY)
             /* identity output function: there is no need to call the output
                function  */
             unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
         else
             /* no identity output function: calculate unit's output also  */
             unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -4610,6 +4742,10 @@ static void propagateNetForwardMAP(int pattern_no, int sub_pat_no,
           /* identity output function: there is no need to call the output
              function  */
           unit_ptr->Out.output = unit_ptr->act;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
         else
           /* no identity output function: calculate unit's output also  */
           unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -4659,7 +4795,10 @@ static float propagateNetBackwardRprop(int pattern_no, int sub_pat_no)
 	sum_error += devit * devit;	/* sum up the error of the network  */
 
 	/* calc. error for output units	 */
-	error = devit * ((unit_ptr->act_deriv_func) ( unit_ptr ));
+	error = devit * (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) );
 
 	unit_ptr->value_c += - error /* *1 */; /* calculate the bias slopes */
 	/* learn bias like a weight  */
@@ -4683,7 +4822,10 @@ static float propagateNetBackwardRprop(int pattern_no, int sub_pat_no)
 
     /* calculate hidden units only  */
     while ((unit_ptr = *--topo_ptr) != NULL){
-	error = ((unit_ptr->act_deriv_func)(unit_ptr)) * unit_ptr->Aux.flint_no;
+	error = (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ) * unit_ptr->Aux.flint_no;
 
 	unit_ptr->value_c += - error /* * 1 */; /* calculate the bias slopes  */
 	/* learn bias like a weight  */
@@ -4753,7 +4895,10 @@ static float propagateNetBackwardMAP(int pattern_no, int sub_pat_no,
         /* calc. error for output units  */
         error = devit;
         if (errorType == SUM_SQUARE_ERROR)
-          error *= ((unit_ptr->act_deriv_func) ( unit_ptr ));
+          error *= (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) );
 
         
         unit_ptr->value_c += - error /* *1 */; /* calculate the bias slopes */
@@ -4778,7 +4923,10 @@ static float propagateNetBackwardMAP(int pattern_no, int sub_pat_no,
 
     /* calculate hidden units only  */
     while ((unit_ptr = *--topo_ptr) != NULL){
-        error = ((unit_ptr->act_deriv_func)(unit_ptr)) * unit_ptr->Aux.flint_no;
+        error = (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ) * unit_ptr->Aux.flint_no;
 
         unit_ptr->value_c += - error /* * 1 */; /* calculate the bias slopes  */
         /* learn bias like a weight  */
@@ -5271,7 +5419,10 @@ static float testNetBackwardRprop(int pattern_no, int sub_pat_no)
 	sum_error += devit * devit;	/* sum up the error of the network  */
 
 	/* calc. error for output units	 */
-	error = devit * ((unit_ptr->act_deriv_func) ( unit_ptr ));
+	error = devit * (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) );
 
     }
 
@@ -5600,6 +5751,11 @@ static krui_err put_ART1_in_pattern(int pattern_no, int sub_pat_no,
     while ((unit_ptr = *topo_ptr++) != NULL) {
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->act = unit_ptr->Out.output = *in_pat++;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->act = *in_pat++;
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->act = *in_pat++;
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -5936,6 +6092,11 @@ static krui_err put_ART2_in_pattern(int pattern_no, int sub_pat_no,
 
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->act = unit_ptr->Out.output = *in_pat++;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->act = *in_pat++;
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->act = *in_pat++;
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -6289,6 +6450,11 @@ static krui_err put_ARTMAP_in_pattern(int pattern_no, int sub_pat_no,
     while ((unit_ptr = *topo_ptr_a++) != NULL) {
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->act = unit_ptr->Out.output = *in_pat++;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->act = *in_pat++;
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->act = *in_pat++;
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -6298,6 +6464,11 @@ static krui_err put_ARTMAP_in_pattern(int pattern_no, int sub_pat_no,
     while ((unit_ptr = *topo_ptr_b++) != NULL) {
 	if (unit_ptr->out_func == OUT_IDENTITY) {
 	    unit_ptr->act = unit_ptr->Out.output = *in_pat++;
+	} else if(unit_ptr->out_func == OUT_Custom_Python) {
+		unit_ptr->act = *in_pat++;
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	} else {
 	    unit_ptr->act = *in_pat++;
 	    unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -6620,6 +6791,10 @@ static void BPTT_propagateNetForward(int pattern_no, int sub_pat_no, int nhist)
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /* there is no need to call the output function  */
 	    unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
 	else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = 
@@ -6674,7 +6849,10 @@ static void BPTT_propagateNetForward(int pattern_no, int sub_pat_no, int nhist)
 	} else {
 	    /* calc actbuf[0] using actbuf[1], don't update Out.output while
 	       updating units, wait until all units are processed  */
-	    unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+	    unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 	    unit_ptr->actbuf[0] = unit_ptr->act;
 	}
 
@@ -6689,6 +6867,10 @@ static void BPTT_propagateNetForward(int pattern_no, int sub_pat_no, int nhist)
 		/* identity output function: there is no need to call the
 		   output function  */
 		unit_ptr->Out.output = unit_ptr->act;
+	    else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
 	    else
 		/* no identity output function: calculate unit's output also  */
 		unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);
@@ -6773,7 +6955,10 @@ static float initOldDeltas(int pattern_no, int sub_pat_no)
 	sum_error += error;
 
 	/* BPTT uses sum_j ( o_j - t_j )^2 as error function => -2.0 * ... */
-	delta = -2.0 * devit * ((unit_ptr->act_deriv_func) (unit_ptr));
+	delta = -2.0 * devit * (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) );
 
 	/* Initdelta, Step 2: upstream propagation of gradients for backprop */
 	FOR_ALL_LINKS(unit_ptr, link_ptr) {
@@ -6849,7 +7034,10 @@ static float oneStepBackprop(int backstep, int pattern_no, int sub_pat_no,
 	    /* copy actbuf[backstep] to act to enable call to act_deriv_func
 	       (overhead: better definition of activation functions required) */
 	    unit_ptr->act = unit_ptr->actbuf[backstep];
-	    delta = ((unit_ptr->act_deriv_func)(unit_ptr)) * unit_ptr->olddelta;
+	    delta = (((unit_ptr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_deriv_func,
+						unit_ptr) :
+			(unit_ptr->act_deriv_func) (unit_ptr)) ) * unit_ptr->olddelta;
 
 	    /* propagate gradients upstream */
 	    FOR_ALL_LINKS(unit_ptr, link_ptr) {
@@ -7416,6 +7604,10 @@ static float propagateNet_kohonen(int pattern_no, int sub_pat_no, float height,
 	    /* identity output function: there is no need to call the output
 	       function  */
 	    unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
 	else
 	    /* no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = 
@@ -7795,10 +7987,17 @@ static void update_je_context_units (int pattern_no, int sub_pat_no,
 
     while ((unit_ptr = *++topo_ptr) != NULL)
     {
-      unit_ptr->act = (*unit_ptr->act_func) (unit_ptr) ;
+      unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr))  ;
 
       if (unit_ptr->out_func == OUT_IDENTITY)
         unit_ptr->Out.output = unit_ptr->act ;
+      else if(unit_ptr->out_func == OUT_Custom_Python)
+      	unit_ptr->Out.output = 
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+			unit_ptr->act); 
       else
         unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
     }
@@ -7838,6 +8037,10 @@ static void reset_je_context_units (void)
 
     if (unit_ptr->out_func == OUT_IDENTITY)
       unit_ptr->Out.output = unit_ptr->act ;
+    else if(unit_ptr->out_func == OUT_Custom_Python)
+    	unit_ptr->Out.output = 
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+			unit_ptr->act); 
     else
       unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
   }
@@ -8122,10 +8325,17 @@ static void test_update_je_context_units (int pattern_no, int sub_pat_no)
 
     while ((unit_ptr = *++topo_ptr) != NULL)
     {
-      unit_ptr->act = (*unit_ptr->act_func) (unit_ptr) ;
+      unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr))  ;
 
       if (unit_ptr->out_func == OUT_IDENTITY)
         unit_ptr->Out.output = unit_ptr->act ;
+      else if(unit_ptr->out_func == OUT_Custom_Python)
+      	unit_ptr->Out.output = 
+		kr_PythonOutFunction(unit_ptr->python_out_func,
+			unit_ptr->act); 
       else
         unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act) ;
     }
@@ -8511,6 +8721,10 @@ static void RM_propagate (int pattern_no, int sub_pat_no, float prop_step)
 	if (unit_ptr->out_func == OUT_IDENTITY)
 	    /*  identity output function: don't call the output function  */
 	    unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	else if(unit_ptr->out_func == OUT_Custom_Python)
+		unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
 	else
 	    /*  no identity output function: calculate unit's output also  */
 	    unit_ptr->Out.output = 
@@ -8525,12 +8739,19 @@ static void RM_propagate (int pattern_no, int sub_pat_no, float prop_step)
 		/* update unit activations first  */
 		if ( !IS_INPUT_UNIT( unit_ptr)) 
 		    /*  unit isn't an input unit and is in use and enabled  */
-		    unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+		    unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
 		/* update unit outputs  */
 		if (unit_ptr->out_func == OUT_IDENTITY)
 		    /*  identity output function: don't call output function  */
 		    unit_ptr->Out.output = unit_ptr->act;
+		else if(unit_ptr->out_func == OUT_Custom_Python)
+			unit_ptr->Out.output = 
+				kr_PythonOutFunction(unit_ptr->python_out_func,
+					unit_ptr->act);
 		else
 		    /*  calculate unit's output also  */
 		    unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act);
@@ -8683,7 +8904,10 @@ static float Hebb_error(int NoOfTimes)
 	    if ( !IS_INPUT_UNIT( unit_ptr)) 
 		if UNIT_IN_USE( unit_ptr )
 		    /*  unit isn't an input unit and is in use and enabled  */
-		    unit_ptr->act = (*unit_ptr->act_func) (unit_ptr);
+		    unit_ptr->act = ((unit_ptr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(unit_ptr->python_act_func,
+						unit_ptr) :
+			(unit_ptr->act_func) (unit_ptr)) ;
 
 	/* update unit outputs */
 	FOR_ALL_UNITS( unit_ptr )
@@ -8691,6 +8915,10 @@ static float Hebb_error(int NoOfTimes)
 		if (unit_ptr->out_func == OUT_IDENTITY)
 		    /* there is no need to call the output function  */
 		    unit_ptr->Out.output = unit_ptr->act;
+		else if(unit_ptr->out_func == OUT_Custom_Python)
+			unit_ptr->Out.output = 
+				kr_PythonOutFunction(unit_ptr->python_out_func,
+					unit_ptr->act);
 		else
 		    /* calculate unit's output also  */
 		    unit_ptr->Out.output = (*unit_ptr->out_func)(unit_ptr->act);
@@ -8786,6 +9014,10 @@ krui_err LEARN_HEBB (int start_pattern, int end_pattern,
 	    if (unit_ptr->out_func == OUT_IDENTITY)
 		/* identity output function */
 		unit_ptr->Out.output = unit_ptr->act = *in_pat++;
+	    else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output = 
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act = *in_pat++);
 	    else
 		/* calculate unit's output */
 		unit_ptr->Out.output = 

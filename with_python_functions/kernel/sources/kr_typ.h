@@ -110,6 +110,13 @@ struct   SiteTable  {
   SiteFuncPtr   site_func;      /*  stores site function    */
 };
 
+#ifndef Py_PYTHON_H
+/* dummy declaration */
+
+typedef struct PyObject PyObject;
+
+#endif
+
 
 
 /*#################################################
@@ -127,6 +134,11 @@ struct   FtypeUnitStruct  {
   ActFuncPtr      act_func;
   ActDerivFuncPtr  act_deriv_func;
   ActDerivFuncPtr  act_2_deriv_func;
+  PyObject *      python_out_func;
+  PyObject *      python_act_func;
+  PyObject *      python_act_deriv_func;
+  PyObject *      python_act_2_deriv_func;
+
 
   struct Site              *sites;
 
@@ -176,6 +188,7 @@ typedef  unsigned short  FlagWord;
 
 /*  Unit structure
 */
+
 struct   Unit  {
   /*  output MUST be the first element in unit structure !
       (access is faster if functions can assume that <output>
@@ -233,8 +246,12 @@ struct   Unit  {
   ActDerivFuncPtr  act_deriv_func;  /*	derivation act. function */
   ActDerivFuncPtr act_2_deriv_func; /*  second derivation act. function */
 
-  char           *unit_name;    /*  unit name */
+  PyObject       *python_out_func; /* Same as above, only if Python */
+  PyObject       *python_act_func; /* functions should be used */
+  PyObject       *python_act_deriv_func;
+  PyObject       *python_act_2_deriv_func;
 
+  char           *unit_name;    /*  unit name */
   short           subnet_no;    /*  subnet no.  */
   unsigned short  layer_no;     /*  display layer (bitfield)  */
 

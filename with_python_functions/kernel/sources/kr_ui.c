@@ -270,7 +270,12 @@ char  *krui_getUnitOutFuncName(int UnitNo)
     if ( (unit_ptr = kr_getUnitPtr( UnitNo ) ) == NULL)
         return( NULL );         /*  invalid unit #  */
 
-    strcpy( out_func_name, krf_getFuncName( (FunctionPtr) unit_ptr->out_func ));
+    if(unit_ptr->out_func == OUT_Custom_Python) {
+    	strncpy(out_func_name, 
+		krf_getFuncName((FunctionPtr) unit_ptr->python_out_func),
+		sizeof(out_func_name)-1);
+	out_func_name[sizeof(out_func_name)-1]=0;		
+    } else strcpy( out_func_name, krf_getFuncName( (FunctionPtr) unit_ptr->out_func ));
 
     return( out_func_name );
 }
@@ -302,9 +307,13 @@ krui_err  krui_setUnitOutFunc(int unit_no, char *unitOutFuncName)
 
     if ( !krf_funcSearch( unitOutFuncName, OUT_FUNC, &func_ptr ))
         return( KernelErrorCode );
-
+    
     unit_ptr->out_func = (OutFuncPtr) func_ptr;
     unit_ptr->Ftype_entry = NULL;
+    if((OutFuncPtr)func_ptr == OUT_Custom_Python) {
+    	unit_ptr->python_out_func 
+    			= kr_findPythonFunction(unitOutFuncName, OUT_FUNC);
+    }
 
     NetModified = TRUE;
 
@@ -328,7 +337,12 @@ char  *krui_getUnitActFuncName(int UnitNo)
     if ( (unit_ptr = kr_getUnitPtr( UnitNo ) ) == NULL)
         return( NULL );         /*  invalid unit #  */
 
-    strcpy( act_func_name, krf_getFuncName( (FunctionPtr) unit_ptr->act_func ));
+    if(unit_ptr->act_func == ACT_Custom_Python) {
+    	strncpy(act_func_name, 
+		krf_getFuncName((FunctionPtr) unit_ptr->python_act_func),
+		sizeof(act_func_name)-1);
+	act_func_name[sizeof(act_func_name)-1]=0;		
+    } else strcpy( act_func_name, krf_getFuncName( (FunctionPtr) unit_ptr->act_func ));
 
     return( act_func_name );
 }
@@ -345,6 +359,9 @@ char  *krui_getUnitActFuncName(int UnitNo)
              error code otherwise.
   UPDATE   :
 ******************************************************************************/
+
+extern FlintType ACT_Custom_Python(struct Unit *unit_ptr);
+
 krui_err  krui_setUnitActFunc(int unit_no, char *unitActFuncName)
 {
     struct Unit   *unit_ptr;
@@ -371,6 +388,15 @@ krui_err  krui_setUnitActFunc(int unit_no, char *unitActFuncName)
     unit_ptr->act_deriv_func = (ActDerivFuncPtr) act_deriv_func_ptr;
     unit_ptr->act_2_deriv_func = (ActDerivFuncPtr) act_2_deriv_func_ptr;
     unit_ptr->Ftype_entry = NULL;
+
+    if((ActFuncPtr)act_func_ptr == ACT_Custom_Python) {
+	 unit_ptr->python_act_func =
+	 	kr_findPythonFunction(unitActFuncName,ACT_FUNC);
+	 unit_ptr->python_act_deriv_func =
+	 	kr_findPythonFunction(unitActFuncName,ACT_DERIV_FUNC);
+	 unit_ptr->python_act_2_deriv_func =
+	 	kr_findPythonFunction(unitActFuncName,ACT_2_DERIV_FUNC);
+    }
 
     NetModified = TRUE;
 
@@ -1736,6 +1762,10 @@ krui_err  krui_createFTypeEntry(char *Ftype_symbol, char *act_func_name,
                                             ,(ActFuncPtr) act_func
                                             ,(ActDerivFuncPtr) act_deriv_func
                                             ,(ActDerivFuncPtr) act_2_deriv_func
+					    ,kr_findPythonFunction(out_func_name,OUT_FUNC)
+					    ,kr_findPythonFunction(act_func_name, ACT_FUNC)
+					    ,kr_findPythonFunction(act_func_name,ACT_DERIV_FUNC)
+					    ,kr_findPythonFunction(act_func_name,ACT_2_DERIV_FUNC)
                                             )) == NULL)
         return( KernelErrorCode );
 
@@ -4519,6 +4549,8 @@ krui_err  krui_setUnitDefaults(FlintTypeParam act, FlintTypeParam bias,
   RETURNS  :
   UPDATE   :
 ******************************************************************************/
+extern FlintType OUT_Custom_Python(FlintType act);
+
 void  krui_resetNet(void)
 {
     register int   i;
@@ -4536,6 +4568,10 @@ void  krui_resetNet(void)
 
             if (unit_ptr->out_func == OUT_IDENTITY)
                 unit_ptr->Out.output = unit_ptr->act;
+            else if(unit_ptr->out_func == OUT_Custom_Python)
+	    	unit_ptr->Out.output =
+			kr_PythonOutFunction(unit_ptr->python_out_func,
+				unit_ptr->act);
             else
                 /*  no identity output function: calculate unit's output also */
                 unit_ptr->Out.output = (*unit_ptr->out_func) (unit_ptr->act);

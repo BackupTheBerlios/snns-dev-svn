@@ -440,6 +440,10 @@ static ActDerivFuncPtr	DefaultUFuncActDeriv = NULL;
 /*  default second derivation act. function  */
 static ActDerivFuncPtr	DefaultUFuncAct2Deriv = NULL;
 
+static PyObject * DefaultUPythonFuncOut;
+static PyObject * DefaultUPythonFuncAct;
+static PyObject * DefaultUPythonFuncActDeriv;
+static PyObject * DefaultUPythonFuncAct2Deriv;
 
 struct TransTable  *transTable = NULL;
 int transTableSize = 0;

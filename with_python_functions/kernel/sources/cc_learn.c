@@ -47,6 +47,11 @@
 #include "cc_display.h"
 #include "tacoma_learn.h"
 
+extern FlintType ACT_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_DERIV_Custom_Python(struct Unit * unit_ptr);
+extern FlintType ACT_2_DERIV_Custom_Python(struct Unit * unit_ptr);
+
+
 /*****************************************************************************
   FUNCTION : cc_initVariables
 
@@ -377,11 +382,17 @@ void cc_calculateOutputUnitError(int StartPattern,int EndPattern)
         ERROR_CHECK_WRC;
         FOR_ALL_OUTPUT_UNITS(UnitPtr,o) {
             CALCULATE_ACTIVATION_AND_OUTPUT(UnitPtr,
-					    (*UnitPtr->act_func)(UnitPtr),p);
+					    ((UnitPtr->act_func == ACT_Custom_Python) ? 
+			kr_PythonActFunction(UnitPtr->python_act_func,
+						UnitPtr) :
+			(UnitPtr->act_func) (UnitPtr)) ,p);
             OUTPUT_UNIT_SUM_ERROR[o] += 
 		(OutputUnitError[p][o] =  
 		      (UnitPtr->Out.output-(*out_pat++))*
-		      ((*UnitPtr->act_deriv_func)(UnitPtr)+cc_fse)); 
+		      (((UnitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(UnitPtr->python_act_deriv_func,
+						UnitPtr) :
+			(UnitPtr->act_deriv_func) (UnitPtr)) +cc_fse)); 
         }
     }
 
@@ -418,7 +429,10 @@ void cc_calculateSpecialUnitActivation(int StartPattern, int EndPattern)
         cc_getActivationsForActualPattern(p,start,&pat,&sub);
 	FOR_ALL_SPECIAL_UNITS(specialUnitPtr,s) {
             CALCULATE_ACTIVATION_AND_OUTPUT(specialUnitPtr,
-				(*specialUnitPtr->act_func) (specialUnitPtr),p);
+				((specialUnitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(specialUnitPtr->python_act_deriv_func,
+						specialUnitPtr) :
+			(specialUnitPtr->act_deriv_func) (specialUnitPtr)) ,p);
 	    SpecialUnitSumAct[s] += 
 		SpecialUnitAct[p][s] = specialUnitPtr->Out.output;
             FOR_ALL_OUTPUT_UNITS(outputUnitPtr,o) {
@@ -457,7 +471,10 @@ float cc_propagateOutput(int PatternNo, int sub_pat_no, float param1,
     FOR_ALL_OUTPUT_UNITS(OutputUnitPtr,dummy){
 	devit =  OutputUnitPtr->Out.output - *(out_pat++);
 	error = devit * 
-	    ((*OutputUnitPtr->act_deriv_func)(OutputUnitPtr) + cc_fse);
+	    (((OutputUnitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(OutputUnitPtr->python_act_deriv_func,
+						OutputUnitPtr) :
+			(OutputUnitPtr->act_deriv_func) (OutputUnitPtr))  + cc_fse);
         BIAS_CURRENT_SLOPE(OutputUnitPtr) += error;
 
       	if (UNIT_HAS_DIRECT_INPUTS(OutputUnitPtr)) {  
@@ -503,7 +520,10 @@ float cc_propagateOutputOnlineCase(int PatternNo, int sub_pat_no,
 
 	sum_error += devit * devit;
 	error = devit * 
-	        ((*OutputUnitPtr->act_deriv_func)(OutputUnitPtr) + dummy1);
+	        (((OutputUnitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(OutputUnitPtr->python_act_deriv_func,
+						OutputUnitPtr) :
+			(OutputUnitPtr->act_deriv_func) (OutputUnitPtr))  + dummy1);
         lastChange = BIAS_LAST_WEIGHT_CHANGE(OutputUnitPtr);
   	OutputUnitPtr->bias -= 
 	    ((BIAS_LAST_WEIGHT_CHANGE(OutputUnitPtr) = 
@@ -552,7 +572,10 @@ krui_err cc_propagateSpecial(int start,int end,int n,int counter,
 	FOR_ALL_SPECIAL_UNITS(SpecialUnitPtr,s) {
 	    change = 0.0;
 	    SpecialUnitPtr->act = SpecialUnitAct[p][s];
-	    actPrime = (*SpecialUnitPtr->act_deriv_func)(SpecialUnitPtr);
+	    actPrime = ((SpecialUnitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(SpecialUnitPtr->python_act_deriv_func,
+						SpecialUnitPtr) :
+			(SpecialUnitPtr->act_deriv_func) (SpecialUnitPtr)) ;
 	    FOR_ALL_OUTPUT_UNITS(OutputUnitPtr,o) 
 		if(UNITS_IN_SAME_GROUP(s,o)){
 		    change -= SIGN_OF_THE_CORRELATION[s][o] *
@@ -595,7 +618,10 @@ krui_err cc_propagateSpecialOnlineCase(int start,int end,int n,int counter,
 	FOR_ALL_SPECIAL_UNITS(SpecialUnitPtr,s) {
 	    change = 0.0;
 	    SpecialUnitPtr->act = SpecialUnitAct[p][s];
-	    actPrime = (*SpecialUnitPtr->act_deriv_func)(SpecialUnitPtr);
+	    actPrime = ((SpecialUnitPtr->act_deriv_func == ACT_DERIV_Custom_Python) ? 
+			kr_PythonActFunction(SpecialUnitPtr->python_act_deriv_func,
+						SpecialUnitPtr) :
+			(SpecialUnitPtr->act_deriv_func) (SpecialUnitPtr)) ;
 	    FOR_ALL_OUTPUT_UNITS(OutputUnitPtr,o) 
                if(UNITS_IN_SAME_GROUP(s,o)){
 		change += SIGN_OF_THE_CORRELATION[s][o] *

@@ -3,6 +3,11 @@ This file documents changes since the first release.
 2004-08-12:
 - Fixed documentation for getFirstSuccUnit
 
+2004-06-30:
+- added support for activation and output functions implemented in
+  Python. This requires a patched SNNS kernel, this patch is also
+  available via snns-dev.
+
 2004-06-05:
 - Fixed two little documentation errors (replaced tuple by sequence)
 
