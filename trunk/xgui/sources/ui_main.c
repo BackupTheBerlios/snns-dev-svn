@@ -290,33 +290,28 @@ static void ui_clickEventProc (Widget w, Display *display, XEvent *event)
 ******************************************************************************/
 static void ui_showBanner (Widget parent)
 {
-     int n;
-     Arg arg[10];
-     Widget banner, frame;
-     int xwsize = snns_width;
-     int ywsize = snns_height;
-     unsigned int xsize, ysize;
+	int n;
+	Arg arg[10];
+	Widget banner, frame;
+	int xwsize = snns_width;
+	int ywsize = snns_height;
+	unsigned int xsize, ysize;
 
-     d3_getRootSizes (&xsize, &ysize);
-     n = 0;
+	d3_getRootSizes (&xsize, &ysize);
+	n = 0;
 
-     XtSetArg (arg[n], XtNwidth, xwsize); n++;
-     XtSetArg (arg[n], XtNheight, ywsize); n++;
-     XtSetArg (arg[n], XtNx, (xsize - xwsize) / 2); n++;
-     XtSetArg (arg[n], XtNy, (ysize - ywsize) / 2); n++;
-     banner = XtCreatePopupShell ("banner", transientShellWidgetClass, 
-                                  parent, arg, (unsigned int) n);
-     n = 0;
-     XtSetArg (arg[n], XtNbitmap, 
-                  (Pixmap) XCreateBitmapFromData (ui_display,
-                   XDefaultRootWindow (ui_display), 
-                   snns_bits, snns_width, snns_height)); n++;
-     frame = XtCreateManagedWidget("", labelWidgetClass,
-                                   banner, arg, (unsigned int) n);
-     XtAddEventHandler (banner, ButtonPressMask, 
-                        FALSE, (XtEventHandler) ui_clickEventProc, ui_display);
-     XtPopup (banner, XtGrabNone);
-     ui_xDontResizeWidget(banner); 
+	XtSetArg (arg[n], XtNwidth, xwsize); n++;
+	XtSetArg (arg[n], XtNheight, ywsize); n++;
+	XtSetArg (arg[n], XtNx, (xsize - xwsize) / 2); n++;
+	XtSetArg (arg[n], XtNy, (ysize - ywsize) / 2); n++;
+	banner = XtCreatePopupShell( "banner", transientShellWidgetClass, parent, arg, (unsigned int) n);
+	n = 0;
+	XtSetArg( arg[n] , XtNbitmap, (Pixmap) XCreateBitmapFromData( ui_display, XDefaultRootWindow( ui_display ), snns_bits, snns_width, snns_height) );
+	n++;
+	frame = XtCreateManagedWidget("", labelWidgetClass, banner, arg, (unsigned int) n);
+	XtAddEventHandler (banner, ButtonPressMask, FALSE, (XtEventHandler) ui_clickEventProc, ui_display);
+	XtPopup (banner, XtGrabNone);
+	ui_xDontResizeWidget(banner); 
 }
 
 

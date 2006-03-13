@@ -2029,7 +2029,8 @@ static void  krio_readHeader(char *netfile_version, char *net_name,
 
   /*  get file version  */
   cursor = getSection( fmt_shape1, &title_no );
-  if ((cursor == NULL) || (title_no != 0))  {
+  if ((cursor == NULL) || (title_no != 0))
+  {
     /*  "SNNS network definition file" not found  */
     KernelErrorCode = KRERR_FILE_FORMAT;
     return;
@@ -2046,10 +2047,9 @@ static void  krio_readHeader(char *netfile_version, char *net_name,
   else
     NetfileVersion = 0;
 
-  if (my_strstr( netfile_version, NETFILE_VERSION ) != NULL ||
-      my_strstr( netfile_version, NETFILE_VERSION2 ) != NULL)
+  if (my_strstr( netfile_version, NETFILE_VERSION ) != NULL || my_strstr( netfile_version, NETFILE_VERSION2 ) != NULL)
     /*  current netfile version  */
-    no_of_scan_params = 9;
+    no_of_scan_params = 10;
   else
     no_of_scan_params = 8;
 
