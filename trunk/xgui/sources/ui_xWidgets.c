@@ -1782,24 +1782,30 @@ Widget  ui_xCreateScrollbarItem(char *name,Widget parent,Dimension length,float 
 
     n = 0;
     XtSetArg(args[n], XtNborderWidth, 1); n++;
-    XtSetArg(args[n], XtNlength, length); n++; 
-    XtSetArg(args[n], XtNthickness, 15); n++;
+    XtSetArg(args[n], XtNlength, length); n++;
+    XtSetArg(args[n], XtNthickness, 15);  n++;
 
     /* see X11R4, Athena, pg. 37: setting float resources */
     /* But it doesn't work ! */
-  /*  if (sizeof(float) > sizeof(XtArgVal)) {
+  /*
+    if (sizeof(float) > sizeof(XtArgVal))
+    {
 	XtSetArg(args[n], XtNtopOfThumb, &topOfThumb); n++; 
-    } else {
+    }
+    else
+    {
 	XtArgVal *l_top = (XtArgVal *) &topOfThumb;
 	XtSetArg(args[n], XtNtopOfThumb, *l_top); n++;
-    } */
+    }
+  */
     
 
-/*    XtSetArg(args[n], XtNinternalHeight, 1); n++;
+/*  
+    XtSetArg(args[n], XtNinternalHeight, 1); n++;
     XtSetArg(args[n], XtNinternalWidth , 1); n++;
 */
-    XtSetArg(args[n], XtNfromVert , top);  n++;
-    XtSetArg(args[n], XtNfromHoriz, left);  n++;
+    XtSetArg(args[n], XtNfromVert , top); n++;
+    XtSetArg(args[n], XtNfromHoriz, left); n++;
     XtSetArg(args[n], XtNleft  , XtChainLeft); n++;
     XtSetArg(args[n], XtNright , XtChainLeft); n++;
     XtSetArg(args[n], XtNtop   , XtChainTop); n++;

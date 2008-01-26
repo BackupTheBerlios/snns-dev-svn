@@ -269,29 +269,22 @@ void ui_popupDone (Widget widget, int client_data, caddr_t call_data)
     char buf[80];
     int  gridSize, i;
 
-    switch (client_data) {
+    switch (client_data)
+    {
       case UI_POPUP_DUMMY:
 	XtDestroyWidget(ui_popDummy);
 	break;
       case UI_POPUP_SETUP: 
 	ui_setupIsCreated = FALSE;
-	gridSize  = 
-	    ui_xIntFromAsciiWidget(ui_set_gridWidthWidget);
+	gridSize  =  ui_xIntFromAsciiWidget(ui_set_gridWidthWidget);
 	if (gridSize >= 1) 
 	    ui_set_displayPtr->gridSize = gridSize;
-	ui_set_displayPtr->origin.x  = 
-	    ui_xIntFromAsciiWidget(ui_set_originXWidget);
-	ui_set_displayPtr->origin.y  = 
-	    ui_xIntFromAsciiWidget(ui_set_originYWidget);
-	ui_set_displayPtr->subNetNo  = 
-	    ui_xIntFromAsciiWidget(ui_set_subnetWidget);
-	sprintf(buf,"snns-display %d - subnet: %d",
-		ui_set_displayPtr->displayNo, 
-		ui_set_displayPtr->subNetNo);
+	ui_set_displayPtr->origin.x  =  ui_xIntFromAsciiWidget(ui_set_originXWidget);
+	ui_set_displayPtr->origin.y  =  ui_xIntFromAsciiWidget(ui_set_originYWidget);
+	ui_set_displayPtr->subNetNo  =  ui_xIntFromAsciiWidget(ui_set_subnetWidget);
+	sprintf(buf,"snns-display %d - subnet: %d", ui_set_displayPtr->displayNo, ui_set_displayPtr->subNetNo);
 	ui_actualZvalue  =  ui_xIntFromAsciiWidget(ui_set_zWidget);
-	XStoreName(ui_display, 
-		   XtWindow(XtParent(ui_set_displayPtr->frameWidget)), 
-		   buf);
+	XStoreName(ui_display, XtWindow(XtParent(ui_set_displayPtr->frameWidget)), buf);
 	ui_net_completeRefresh(ui_set_displayPtr, UI_LOCAL);
 	XtDestroyWidget(ui_popSetup);
 	break;
@@ -369,12 +362,11 @@ void ui_popupWeights (Widget button, caddr_t call_data, caddr_t client_data)
     /* Upper left corner will be in the center of the calling button */
 
     ui_xGetDimensions(button, &width, &height);
-    XtTranslateCoords(button, (Position) (width / 2), 
-		      (Position) (height / 2), &x, &y);
+    XtTranslateCoords(button, (Position) (width / 2), (Position) (height / 2), &x, &y);
     
     n = 0;
-    XtSetArg(args[n], XtNx, x);	n++;
-    XtSetArg(args[n], XtNy, y);	n++;
+    XtSetArg(args[n], XtNx, x); n++;
+    XtSetArg(args[n], XtNy, y); n++;
     
     /* Now create Popup */
     
@@ -865,8 +857,7 @@ void ui_listPopup (struct SimpleListType *listDescriptorPtr, Position x,
   UPDATE   : 27.5.1990
 ******************************************************************************/
 
-static void ui_popupSetup (Widget button, struct Ui_DisplayType *displayPtr, 
-	caddr_t call_data)
+static void ui_popupSetup (Widget button, struct Ui_DisplayType *displayPtr, caddr_t call_data)
 
 {
     Widget      doneButton;
@@ -877,43 +868,31 @@ static void ui_popupSetup (Widget button, struct Ui_DisplayType *displayPtr,
 
     /* Upper left corner will be in the center of the calling button */
 
-    if (NOT ui_setupIsCreated) {
-
+    if (NOT ui_setupIsCreated)
+    {
 	n = 0;
 	XtSetArg(args[0], XtNwidth, &width); n++;
 	XtSetArg(args[1], XtNheight, &height); n++;
 	XtGetValues(button, args, n);
-	XtTranslateCoords(button, (Position) (width / 2), 
-			  (Position) (height / 2),
-			  &x, &y);
+	XtTranslateCoords(button, (Position) (width / 2), (Position) (height / 2), &x, &y);
 
 	n = 0;
-	XtSetArg(args[n], XtNx, x);	n++;
-	XtSetArg(args[n], XtNy, y);	n++;
+	XtSetArg(args[n], XtNx, x); n++;
+	XtSetArg(args[n], XtNy, y); n++;
 
 	/* Now create Popup */
 
-	ui_popSetup = 
-	    XtCreatePopupShell("setup", transientShellWidgetClass, 
-			       ui_toplevel, args, n);
-
-	ui_setupBox = 
-	    XtCreateManagedWidget("form", formWidgetClass, ui_popSetup, 
-				  NULL, ZERO);
-
+	ui_popSetup =  XtCreatePopupShell("setup", transientShellWidgetClass, ui_toplevel, args, n);
+	ui_setupBox =  XtCreateManagedWidget("form", formWidgetClass, ui_popSetup, NULL, ZERO);
 	ui_xCreateSetupPanel(ui_setupBox, displayPtr);
 
-	doneButton = 
-	    ui_xCreateButtonItem("done", ui_setupBox, NULL, ui_setupPanel);
-	XtAddCallback(doneButton, XtNcallback, (XtCallbackProc) ui_popupDone, 
-		(caddr_t) UI_POPUP_SETUP);
+	doneButton =   ui_xCreateButtonItem("done", ui_setupBox, NULL, ui_setupPanel);
+	XtAddCallback(doneButton, XtNcallback, (XtCallbackProc) ui_popupDone, (caddr_t) UI_POPUP_SETUP);
 
-	ui_setupSliderMessage = 
-	    ui_xCreateLabelItem("", ui_setupBox, 30*ui_labelFontWidth, 
-				doneButton, ui_setupPanel);
+	ui_setupSliderMessage = ui_xCreateLabelItem("", ui_setupBox, 30*ui_labelFontWidth, doneButton, ui_setupPanel);
 	ui_checkWindowPosition(ui_popSetup);
 	XtPopup(ui_popSetup, XtGrabExclusive);
-        ui_xDontResizeWidget(ui_popSetup); 
+        ui_xDontResizeWidget(ui_popSetup);
     }
 }
 
@@ -1073,8 +1052,7 @@ static void ui_refresh (Widget w, struct Ui_DisplayType *displayPtr,
 
   UPDATE   : 1.4.1990
 ******************************************************************************/
-void ui_displayGraphic (Widget button, struct Ui_DisplayType *displPtr, 
-			caddr_t call_data)
+void ui_displayGraphic (Widget button, struct Ui_DisplayType *displPtr, caddr_t call_data)
 
 {
     Widget         fbutton;
@@ -1085,41 +1063,36 @@ void ui_displayGraphic (Widget button, struct Ui_DisplayType *displPtr,
    
     struct Ui_DisplayType  *displayPtr;
 
-    if (displPtr == NULL) {
+    if( displPtr == NULL )
+    {
 	/* call from the GUI menue */
-	if ((displayPtr = ui_displ_getFreeItem()) == NULL) {
+	if( (displayPtr = ui_displ_getFreeItem()) == NULL)
+	{
 	    ui_confirmOk("No more memory for displays available!");
 	    return;
 	}
-    } else
+    }
+    else
 	/* call from ui_cfg_load() */
 	displayPtr = displPtr;
 
-    sprintf(buf,"SNNS display %d - subnet: %d",
-	    displayPtr->displayNo, displayPtr->subNetNo);
+    sprintf(buf,"SNNS display %d - subnet: %d",displayPtr->displayNo, displayPtr->subNetNo);
 
     n = 0;
-    ui_popCanvas = XtCreatePopupShell(buf, topLevelShellWidgetClass, 
-				      ui_toplevel, args, n);
+    ui_popCanvas = XtCreatePopupShell(buf, topLevelShellWidgetClass, ui_toplevel, args, n);
 
     /* now create the display structure to held data */
-    displayPtr->frameWidget = XtCreateManagedWidget("form", formWidgetClass, 
-						    ui_popCanvas, NULL, ZERO);
+    displayPtr->frameWidget = XtCreateManagedWidget("form", formWidgetClass, ui_popCanvas, NULL, ZERO);
 
     fbutton = ui_xCreateButtonItem("done", displayPtr->frameWidget, NULL, NULL);
-    XtAddCallback(fbutton, XtNcallback, (XtCallbackProc) ui_displayDone, 
-		  (struct Ui_DisplayType  *) displayPtr);
+    XtAddCallback(fbutton, XtNcallback, (XtCallbackProc) ui_displayDone, (struct Ui_DisplayType  *) displayPtr);
 
-    fbutton = ui_xCreateButtonItem("setup", displayPtr->frameWidget, fbutton, 
-				   NULL);
-    XtAddCallback(fbutton, XtNcallback, (XtCallbackProc) ui_popupSetup, 
-		  (struct Ui_DisplayType *) displayPtr);
+    fbutton = ui_xCreateButtonItem("setup", displayPtr->frameWidget, fbutton, NULL);
+    XtAddCallback(fbutton, XtNcallback, (XtCallbackProc) ui_popupSetup, (struct Ui_DisplayType *) displayPtr);
 
-    fbutton = ui_xCreateToggleItem("freeze", displayPtr->frameWidget, NULL, 
-				   fbutton, NULL);
+    fbutton = ui_xCreateToggleItem("freeze", displayPtr->frameWidget, NULL, fbutton, NULL);
     ui_xSetToggleState(fbutton, displayPtr->frozen);
-    XtAddCallback(fbutton, XtNcallback, (XtCallbackProc) ui_displ_freezeDisplay,
-		  (struct Ui_DisplayType *) displayPtr);
+    XtAddCallback(fbutton, XtNcallback, (XtCallbackProc) ui_displ_freezeDisplay, (struct Ui_DisplayType *) displayPtr);
 
     n = 0;
     XtSetArg(args[n], XtNwidth,  displayPtr->width); n++;
@@ -1129,48 +1102,24 @@ void ui_displayGraphic (Widget button, struct Ui_DisplayType *displPtr,
     XtSetArg(args[n], XtNright , XtChainRight); n++;
     XtSetArg(args[n], XtNtop   , XtChainTop); n++;
     XtSetArg(args[n], XtNbottom, XtChainBottom); n++;
-    displayPtr->widget = XtCreateManagedWidget("display", boxWidgetClass, 
-					       displayPtr->frameWidget, args,n);
-    trans = XtParseTranslationTable("Ctrl<Btn1Down>: XawPositionSimpleMenu(popmenu) MenuPopup(popmenu)");
-    
-    XtAugmentTranslations(displayPtr->widget, trans);                     
-    
 
-    XtAddEventHandler(displayPtr->widget, ExposureMask, GraphicsExpose, 
-		      (XtEventHandler) ui_refresh, 
-		      (struct Ui_DisplayType *) displayPtr);
-    XtAddEventHandler(ui_popCanvas, 
-		      StructureNotifyMask | SubstructureNotifyMask, FALSE, 
-		      (XtEventHandler) ui_refresh, 
-		      (struct Ui_DisplayType *) displayPtr);
-    XtAddEventHandler(displayPtr->widget, 
-		      ButtonPressMask | ButtonMotionMask | ButtonReleaseMask 
-		      | EnterWindowMask | LeaveWindowMask,
-		      FALSE, (XtEventHandler) ui_mw_eventProc, 
-		      (struct Ui_DisplayType *) displayPtr);
-    XtAddEventHandler(displayPtr->widget, 
-		      KeyPressMask, FALSE, (XtEventHandler) ui_can_KEventProc, 
-		      (struct Ui_DisplayType *) displayPtr);
-    XtAddEventHandler(ui_popCanvas, StructureNotifyMask,
-		      FALSE, (XtEventHandler) ui_can_MapEventProc, 
-		      (struct Ui_DisplayType *) displayPtr);
+    displayPtr->widget = XtCreateManagedWidget("display", boxWidgetClass, displayPtr->frameWidget, args,n);
+    trans = XtParseTranslationTable("Ctrl<Btn1Down>: XawPositionSimpleMenu(popmenu) MenuPopup(popmenu)");
+
+    XtAugmentTranslations(displayPtr->widget, trans);                     
+
+    XtAddEventHandler(displayPtr->widget, ExposureMask, GraphicsExpose,(XtEventHandler) ui_refresh, (struct Ui_DisplayType *) displayPtr);
+    XtAddEventHandler(ui_popCanvas, StructureNotifyMask | SubstructureNotifyMask, FALSE, (XtEventHandler) ui_refresh,(struct Ui_DisplayType *) displayPtr);
+    XtAddEventHandler(displayPtr->widget, ButtonPressMask | ButtonMotionMask | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask, FALSE, (XtEventHandler) ui_mw_eventProc, (struct Ui_DisplayType *) displayPtr);
+    XtAddEventHandler(displayPtr->widget, KeyPressMask, FALSE, (XtEventHandler) ui_can_KEventProc, (struct Ui_DisplayType *) displayPtr);
+    XtAddEventHandler(ui_popCanvas, StructureNotifyMask, FALSE, (XtEventHandler) ui_can_MapEventProc, (struct Ui_DisplayType *) displayPtr);
 
     ui_checkWindowPosition(ui_popCanvas);
     XtPopup(ui_popCanvas, XtGrabNone);
-
     displayPtr->drawable = XtWindow(displayPtr->widget);
-
     ui_xToggleBackingStore(TRUE, ui_display, displayPtr->drawable);
-
-    XSelectInput(ui_display, displayPtr->drawable, 
-		 ExposureMask | PointerMotionMask |
-		 ButtonPressMask | ButtonMotionMask | ButtonReleaseMask |
-		 KeyPressMask | EnterWindowMask | LeaveWindowMask);
-
-    XGrabButton(ui_display, AnyButton, AnyModifier, displayPtr->drawable, TRUE,
-		ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,
-		GrabModeAsync, GrabModeAsync, None,
-		XCreateFontCursor(ui_display, XC_crosshair));
+    XSelectInput(ui_display, displayPtr->drawable, ExposureMask | PointerMotionMask | ButtonPressMask | ButtonMotionMask | ButtonReleaseMask | KeyPressMask | EnterWindowMask | LeaveWindowMask);
+    XGrabButton(ui_display, AnyButton, AnyModifier, displayPtr->drawable, TRUE,	ButtonPressMask | ButtonMotionMask | ButtonReleaseMask,	GrabModeAsync, GrabModeAsync, None, XCreateFontCursor(ui_display, XC_crosshair));
 }
 
 
@@ -1527,8 +1476,7 @@ void ui_displayText (Widget button, caddr_t client_data, caddr_t call_data)
     XtSetArg(args[n], XtNright , XtChainLeft);   n++;
     XtSetArg(args[n], XtNtop   , XtChainTop);    n++;
     XtSetArg(args[n], XtNbottom, XtChainTop);    n++;	
-    listPtr->textWidget = XtCreateManagedWidget("textWin", asciiTextWidgetClass,
-						form, args, n);
+    listPtr->textWidget = XtCreateManagedWidget("textWin", asciiTextWidgetClass,form, args, n);
 
     XtAddCallback(lookButton,   XtNcallback, ui_textLook,   
 		  (XtPointer) listPtr->textWidget);

@@ -211,15 +211,15 @@ void d3_displayGraphic (void)
     Cardinal     n;
     char         buf[40];
 
-    if (d3_controlIsReady){
+    if (d3_controlIsReady)
+    {
 	XRaiseWindow(XtDisplay(d3_controlWidget), XtWindow(d3_controlWidget));
-       return;
+	return;
     }
 
-    sprintf (buf, "SNNS 3D-control");
+    sprintf( buf, "SNNS 3D-control");
     n = 0;  
-    d3_controlWidget = XtCreatePopupShell (buf, topLevelShellWidgetClass, 
-                                           ui_toplevel, arg, n); 
+    d3_controlWidget = XtCreatePopupShell (buf, topLevelShellWidgetClass, ui_toplevel, arg, n);
 
     n = 0;
     XtSetArg (arg[n], XtNwidth, 300); n++;
@@ -228,13 +228,11 @@ void d3_displayGraphic (void)
     XtSetArg (arg[n], XtNtop   , XtChainTop); n++;
     XtSetArg (arg[n], XtNbottom, XtChainBottom); n++;
 
-    d3_frameWidget = XtCreateManagedWidget ("form", boxWidgetClass, 
-                                            d3_controlWidget, arg, n);
+    d3_frameWidget = XtCreateManagedWidget ("form", boxWidgetClass, d3_controlWidget, arg, n);
     d3_createControlPannel (d3_frameWidget);
 
     ui_checkWindowPosition(d3_controlWidget);
-    XtAddEventHandler(d3_frameWidget,KeyPressMask,FALSE,
-		      (XtEventHandler)ui_key_control,(Cardinal *) 0);
+    XtAddEventHandler(d3_frameWidget,KeyPressMask,FALSE,(XtEventHandler)ui_key_control,(Cardinal *) 0);
     XtPopup (d3_controlWidget, XtGrabNone);
     ui_xDontResizeWidget(d3_controlWidget); 
 

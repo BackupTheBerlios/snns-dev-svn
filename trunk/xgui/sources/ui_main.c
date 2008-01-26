@@ -127,36 +127,32 @@ static void ui_init (void)
 ******************************************************************************/
 static void ui_xCreatePanel (void)
 {
-    Widget      menu, mItem, label,button,buttontop,buttontop2,
-                form,dummyLabel;
+    Widget      menu, mItem, label,button,buttontop,buttontop2, form,dummyLabel;
     Arg		args[10];
     Cardinal	n=0;
     XFontStruct *ui_font;
 
-    ui_infoBox = XtCreateManagedWidget("form", formWidgetClass, ui_toplevel, 
-				       NULL,ZERO);
+    ui_infoBox = XtCreateManagedWidget("form", formWidgetClass, ui_toplevel, NULL,ZERO);
 
     ui_display  = XtDisplay(ui_infoBox);
     dummyLabel = ui_xCreateLabelItem(" ", ui_infoBox, 1, NULL, NULL);
     XtSetArg(args[0], XtNfont, &ui_font); 
     XtGetValues(dummyLabel, args, 1);
-    ui_labelFontWidth = (int)((ui_font->max_bounds.width + 
-			       ui_font->min_bounds.width)*0.5+0.5)+1;
-    if(ui_labelFontWidth < 3){
+    ui_labelFontWidth = (int)((ui_font->max_bounds.width + ui_font->min_bounds.width)*0.5+0.5)+1;
+    if(ui_labelFontWidth < 3)
+    {
 	ui_confirmOk("Can not access font structure!\n Now using font 7x13");
         ui_labelFontWidth = 7;
     }
 
     button = ui_xCreateButtonItem("fileP", ui_infoBox, NULL, NULL);
-    XtAddCallback(button,XtNcallback, (XtCallbackProc)ui_displayFilePanel, 
-		  (Widget) button);
+    XtAddCallback(button,XtNcallback, (XtCallbackProc)ui_displayFilePanel,(Widget) button);
 
     button = ui_xCreateButtonItem("controlP", ui_infoBox, button, NULL);
     XtAddCallback(button,XtNcallback, (XtCallbackProc)ui_displayControl, NULL); 
 
     button = ui_xCreateButtonItem("infoP", ui_infoBox, button, NULL);
-    XtAddCallback(button,XtNcallback, (XtCallbackProc)ui_displayInfo,
-		  (Widget) ui_infoBox); 
+    XtAddCallback(button,XtNcallback, (XtCallbackProc)ui_displayInfo,(Widget) ui_infoBox); 
 
     button = ui_xCreateButtonItem("displayP", ui_infoBox, button, NULL);
     XtAddCallback(button,XtNcallback, (XtCallbackProc)ui_displayGraphic, NULL); 
@@ -169,11 +165,9 @@ static void ui_xCreatePanel (void)
 
     buttontop = ui_xCreateMenuButtonItem("bignetP", ui_infoBox, button, NULL);
     menu = XtCreatePopupShell("menu",simpleMenuWidgetClass,buttontop,NULL,ZERO);
-    mItem = XtCreateManagedWidget("general",smeBSBObjectClass,menu,
-				  NULL,ZERO);
+    mItem = XtCreateManagedWidget("general",smeBSBObjectClass,menu, NULL,ZERO);
     XtAddCallback(mItem, XtNcallback, (XtCallbackProc) bn_createBignet, NULL);
-    mItem = XtCreateManagedWidget("time_delay",smeBSBObjectClass,menu,
-				  NULL,ZERO);
+    mItem = XtCreateManagedWidget("time_delay",smeBSBObjectClass,menu, NULL,ZERO);
     XtAddCallback(mItem, XtNcallback,(XtCallbackProc) bn_create_TD_Bignet,NULL);
     mItem = XtCreateManagedWidget("art1",smeBSBObjectClass,menu, NULL,ZERO);
     XtAddCallback(mItem, XtNcallback, (XtCallbackProc) bn_createART1, NULL);
@@ -209,11 +203,9 @@ static void ui_xCreatePanel (void)
     XtAddCallback(button,XtNcallback, (XtCallbackProc)ui_displMap, NULL);
 
     buttontop2 = ui_xCreateButtonItem("analyzeP", ui_infoBox, button,buttontop);
-    XtAddCallback(buttontop2, XtNcallback, 
-		  (XtCallbackProc) NA_OpenNetworkAnalyzer, NULL);
+    XtAddCallback(buttontop2, XtNcallback, (XtCallbackProc) NA_OpenNetworkAnalyzer, NULL);
 
-    buttontop = ui_xCreateButtonItem("inversionP", ui_infoBox,buttontop2,
-				     buttontop);
+    buttontop = ui_xCreateButtonItem("inversionP", ui_infoBox,buttontop2 ,buttontop);
     XtAddCallback(buttontop,XtNcallback, (XtCallbackProc) ui_inversion, NULL);
 
     button = ui_xCreateButtonItem("printP", ui_infoBox, NULL, buttontop);
@@ -226,8 +218,7 @@ static void ui_xCreatePanel (void)
     XtAddCallback(button,XtNcallback, (XtCallbackProc) ui_classWindow, NULL);
 
     button = ui_xCreateButtonItem("quitP", ui_infoBox, buttontop2, buttontop);
-    XtAddCallback(button,XtNcallback, (XtCallbackProc) ui_guiQuit, 
-		  (XtPointer) ui_infoBox);
+    XtAddCallback(button,XtNcallback, (XtCallbackProc) ui_guiQuit, (XtPointer) ui_infoBox);
 
     n=0;
     XtSetArg(args[n], XtNborderWidth, 1);n++; 
@@ -238,22 +229,19 @@ static void ui_xCreatePanel (void)
     XtSetArg(args[n], XtNfromVert,button);n++;
     form = XtCreateManagedWidget("form", formWidgetClass, ui_infoBox, args, n);
 
-    ui_message = ui_xCreateLabelItem("manMsg", form, 63*ui_labelFontWidth, 
-				     NULL, NULL);
+    ui_message = ui_xCreateLabelItem("manMsg", form, 63*ui_labelFontWidth, NULL, NULL);
 
-    ui_stat_posWidget = ui_xCreateLabelItem("*", form, 16*ui_labelFontWidth,
-					    NULL, ui_message);
+    ui_stat_posWidget = ui_xCreateLabelItem("*", form, 16*ui_labelFontWidth, NULL, ui_message);
+
     label = ui_xCreateLabelItem("noSel", form, 20,ui_stat_posWidget,ui_message);
-    ui_stat_selNoWidget = ui_xCreateLabelItem("*", form, 8*ui_labelFontWidth,
-					      label,ui_message);
+    ui_stat_selNoWidget = ui_xCreateLabelItem("*", form, 8*ui_labelFontWidth,label,ui_message);
+
     label = ui_xCreateLabelItem("flags",form,20,ui_stat_selNoWidget,ui_message);
-    ui_stat_flagsWidget = ui_xCreateLabelItem("*",form, 15*ui_labelFontWidth,
-					      label,ui_message);
+    ui_stat_flagsWidget = ui_xCreateLabelItem("*",form, 15*ui_labelFontWidth,label,ui_message);
 
     XawFormDoLayout(ui_infoBox, True);
     
-    XtAddEventHandler(ui_infoBox,KeyPressMask,FALSE,
-		      (XtEventHandler)ui_key_control, (Cardinal *) 0);
+    XtAddEventHandler(ui_infoBox,KeyPressMask,FALSE,(XtEventHandler)ui_key_control, (Cardinal *) 0);
 
 
 }
@@ -288,7 +276,7 @@ static void ui_clickEventProc (Widget w, Display *display, XEvent *event)
 
   UPDATE   : 11.2..1992
 ******************************************************************************/
-static void ui_showBanner (Widget parent)
+static void ui_showBanner( Widget parent )
 {
 	int n;
 	Arg arg[10];
@@ -298,20 +286,21 @@ static void ui_showBanner (Widget parent)
 	unsigned int xsize, ysize;
 
 	d3_getRootSizes (&xsize, &ysize);
-	n = 0;
 
+	n = 0;
 	XtSetArg (arg[n], XtNwidth, xwsize); n++;
 	XtSetArg (arg[n], XtNheight, ywsize); n++;
 	XtSetArg (arg[n], XtNx, (xsize - xwsize) / 2); n++;
 	XtSetArg (arg[n], XtNy, (ysize - ywsize) / 2); n++;
 	banner = XtCreatePopupShell( "banner", transientShellWidgetClass, parent, arg, (unsigned int) n);
+
 	n = 0;
-	XtSetArg( arg[n] , XtNbitmap, (Pixmap) XCreateBitmapFromData( ui_display, XDefaultRootWindow( ui_display ), snns_bits, snns_width, snns_height) );
+	XtSetArg( arg[n] ,XtNbitmap ,(Pixmap) XCreateBitmapFromData( ui_display ,XDefaultRootWindow( ui_display ) ,snns_bits ,snns_width ,snns_height) );
 	n++;
 	frame = XtCreateManagedWidget("", labelWidgetClass, banner, arg, (unsigned int) n);
-	XtAddEventHandler (banner, ButtonPressMask, FALSE, (XtEventHandler) ui_clickEventProc, ui_display);
-	XtPopup (banner, XtGrabNone);
-	ui_xDontResizeWidget(banner); 
+	XtAddEventHandler( banner ,ButtonPressMask ,FALSE ,(XtEventHandler) ui_clickEventProc ,ui_display);
+	XtPopup( banner ,XtGrabNone );
+	ui_xDontResizeWidget( banner );
 }
 
 
@@ -326,9 +315,7 @@ static void ui_showBanner (Widget parent)
 ******************************************************************************/
 void main (int argc, char **argv)
 {
-    ui_toplevel = XtAppInitialize(&ui_appContext, "Popup", NULL, ZERO,
-				  (int *) &argc, argv, fallback_resources, 
-				  NULL, ZERO);
+    ui_toplevel = XtAppInitialize(&ui_appContext, "Popup", NULL, ZERO,  (int *) &argc, argv, fallback_resources, NULL, ZERO);
 
 #ifdef PARAGON_KERNEL
     krip_Init();
@@ -341,8 +328,7 @@ void main (int argc, char **argv)
     ui_screen   = DefaultScreen(ui_display);
     ui_xDontResizeWidget(ui_toplevel);
     ui_xCreateGC(XtWindow(ui_toplevel));
-    XStoreName(ui_display, XtWindow(ui_toplevel),
-	       "SNNS Manager Panel");
+    XStoreName(ui_display, XtWindow(ui_toplevel),"SNNS Manager Panel");
     ui_showBanner (ui_toplevel);
     ui_col_init();
     d3_init_main ();
