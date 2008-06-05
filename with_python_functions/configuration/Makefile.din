@@ -114,7 +114,7 @@ SUBSTOBJECTS       = @LIBOBJS@ @ALLOCA@ # REPORT_IF_BUG
 .SUFFIXES:
 .SUFFIXES: .c .o
 .c.o:
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+	$(CC) -fPIC $(CPPFLAGS) $(CFLAGS) -c $<
 
 #*****************************************************************************
 # End of common Makefile.defs

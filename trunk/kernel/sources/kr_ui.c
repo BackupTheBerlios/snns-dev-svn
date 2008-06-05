@@ -57,6 +57,10 @@
 
 #endif
 
+/************ Random seed storage **************/
+long randomSeedVal=0;
+/***********************************************/
+
 /*****************************************************************************
   FUNCTION : krui_getNoOfUnits
 
@@ -4556,10 +4560,15 @@ void  krui_resetNet(void)
 void  krui_setSeedNo(long int seed)
 {
 
-    if (seed != 0)
+    if (seed != 0) {
+	randomSeedVal = seed;
         srand48( seed );  
-    else
-        srand48( (long) time( (time_t *) 0) ); 
+    } else {
+        if (randomSeedVal == 0) {
+            randomSeedVal = (long) time( (time_t *) 0);
+            srand48( randomSeedVal ); 
+        }
+    }
 }
 
 

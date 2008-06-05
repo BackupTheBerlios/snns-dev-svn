@@ -2210,6 +2210,12 @@ krui_err  INIT_JE_Weights (float *parameterArray, int NoOfParams)
  
   range = max_weight - min_weight ;
 
+  /*
+   * PATCHED 2005-08-01 -- Sabit Cakmak
+   * Ensure the random number generator has been initialized, or an error may occur
+   */
+  krui_setSeedNo(0);
+
   /* if (range < 0.0) return (KRERR_PARAMETERS) ; */
 
   FOR_ALL_UNITS (unit_ptr) 
